@@ -383,6 +383,12 @@ body {
     margin: 10px 0;
 }
 
+.calendly-inline-widget {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .brand-name {
