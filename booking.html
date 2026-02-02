@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colibrí Esthetics - Book</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="page-header">
+        <a href="index.html" class="back-link">← Home</a>
+        <nav class="top-nav">
+            <a href="about.html" class="top-link">About Me</a>
+            <a href="services.html" class="top-link">Services</a>
+        </nav>
+    </header>
+
+    <main class="minimal-main">
+        <section class="minimal-section">
+            <h1 class="page-title">Book</h1>
+            
+            <form class="minimal-form">
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="tel" name="phone" placeholder="Phone" required>
+                <select name="service" required>
+                    <option value="">Select Service</option>
+                    <option value="facial">Facial</option>
+                    <option value="peel">Chemical Peel</option>
+                    <option value="microderm">Microdermabrasion</option>
+                    <option value="waxing">Waxing</option>
+                    <option value="anti-aging">Anti-Aging</option>
+                    <option value="acne">Acne Treatment</option>
+                </select>
+                <textarea name="message" placeholder="Message (optional)" rows="4"></textarea>
+                <button type="submit" class="cta-button">Send Request</button>
+            </form>
+
+            <div class="contact-minimal">
+                <p>📞 [Your Phone]</p>
+                <p>📧 [Your Email]</p>
+                <p>📍 [Your Location]</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
