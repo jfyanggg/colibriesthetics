@@ -5,7 +5,1046 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colibrí Esthetic - Book</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <style>
+        /* ============================================
+           BOOKING SYSTEM STYLES
+           Matches Colibrí Esthetic aesthetic:
+           - Background: #fafafa
+           - Headings: Cormorant Garamond, #2c2c2c
+           - Body: Montserrat 300, #666
+           - Borders: #e0e0e0
+           - Buttons: #2c2c2c bg, white text
+           ============================================ */
+
+        /* Progress Steps */
+        .booking-progress {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-step .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #e0e0e0;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 300;
+            color: #ccc;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .progress-step.active .step-number {
+            border-color: #2c2c2c;
+            color: #2c2c2c;
+            font-weight: 400;
+        }
+
+        .progress-step.completed .step-number {
+            background: #2c2c2c;
+            border-color: #2c2c2c;
+            color: white;
+        }
+
+        .progress-step .step-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 300;
+            color: #ccc;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 8px;
+            transition: color 0.4s ease;
+        }
+
+        .progress-step.active .step-label,
+        .progress-step.completed .step-label {
+            color: #2c2c2c;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 18px;
+            left: 12.5%;
+            right: 12.5%;
+            height: 1px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: #2c2c2c;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        /* Step Containers */
+        .booking-step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .booking-step.active {
+            display: block;
+        }
+
+        .step-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .step-subtitle {
+            font-size: 0.9rem;
+            color: #999;
+            font-weight: 300;
+            margin-bottom: 35px;
+        }
+
+        /* ---- STEP 1: Service Selection ---- */
+        .service-category {
+            margin-bottom: 30px;
+        }
+
+        .service-category-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #2c2c2c;
+            letter-spacing: 1px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2c2c2c;
+            margin-bottom: 5px;
+        }
+
+        .service-select-item {
+            display: flex;
+            align-items: center;
+            padding: 22px 0;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 18px;
+        }
+
+        .service-select-item:last-child {
+            border-bottom: none;
+        }
+
+        .service-select-item:hover {
+            padding-left: 5px;
+        }
+
+        .service-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 1px solid #d0d0d0;
+            border-radius: 2px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .service-select-item.selected .service-checkbox {
+            background: #2c2c2c;
+            border-color: #2c2c2c;
+        }
+
+        .service-checkbox svg {
+            width: 14px;
+            height: 14px;
+            stroke: white;
+            stroke-width: 2.5;
+            fill: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .service-select-item.selected .service-checkbox svg {
+            opacity: 1;
+        }
+
+        .service-select-info {
+            flex: 1;
+        }
+
+        .service-select-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #2c2c2c;
+            margin-bottom: 3px;
+        }
+
+        .service-select-duration {
+            font-size: 0.8rem;
+            color: #999;
+            font-weight: 300;
+        }
+
+        .service-select-price {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            color: #666;
+            font-weight: 300;
+            flex-shrink: 0;
+        }
+
+        .service-select-description {
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 300;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        /* Cart Summary (sticky bottom) */
+        .cart-summary {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .cart-summary.visible {
+            transform: translateY(0);
+        }
+
+        .cart-details {
+            display: flex;
+            gap: 25px;
+        }
+
+        .cart-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-label {
+            font-size: 0.7rem;
+            color: #999;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .cart-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            color: #2c2c2c;
+            font-weight: 400;
+        }
+
+        /* ---- STEP 2: Consultation Form ---- */
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .form-section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: #999;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .form-group label .required {
+            color: #c0392b;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 0;
+            border: none;
+            border-bottom: 1px solid #e0e0e0;
+            background: transparent;
+            font-size: 0.95rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            color: #2c2c2c;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-bottom-color: #2c2c2c;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0 center;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        /* Radio / Checkbox groups */
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .option-pill {
+            padding: 8px 18px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .option-pill:hover {
+            border-color: #999;
+        }
+
+        .option-pill.selected {
+            background: #2c2c2c;
+            border-color: #2c2c2c;
+            color: white;
+        }
+
+        .checkbox-pill.selected {
+            background: #2c2c2c;
+            border-color: #2c2c2c;
+            color: white;
+        }
+
+        /* Date input styling */
+        .form-group input[type="date"] {
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        /* ---- STEP 3: Date & Time ---- */
+        .calendar-container {
+            margin-bottom: 35px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .calendar-month {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #2c2c2c;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        .calendar-nav button {
+            background: none;
+            border: 1px solid #e0e0e0;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .calendar-nav button:hover {
+            border-color: #2c2c2c;
+            color: #2c2c2c;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .calendar-day-label {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #999;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 8px 0;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #2c2c2c;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .calendar-day:hover:not(.disabled):not(.empty) {
+            background: #f0f0f0;
+        }
+
+        .calendar-day.selected {
+            background: #2c2c2c;
+            color: white;
+        }
+
+        .calendar-day.disabled {
+            color: #ddd;
+            cursor: default;
+        }
+
+        .calendar-day.empty {
+            cursor: default;
+        }
+
+        .calendar-day.today:not(.selected) {
+            font-weight: 400;
+        }
+
+        .calendar-day.today:not(.selected)::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: #2c2c2c;
+            border-radius: 50%;
+        }
+
+        /* Time Slots */
+        .time-slots-container {
+            margin-top: 10px;
+        }
+
+        .time-slots-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #2c2c2c;
+            margin-bottom: 15px;
+        }
+
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+        }
+
+        .time-slot {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .time-slot:hover {
+            border-color: #2c2c2c;
+            color: #2c2c2c;
+        }
+
+        .time-slot.selected {
+            background: #2c2c2c;
+            border-color: #2c2c2c;
+            color: white;
+        }
+
+        .time-slot.disabled {
+            color: #ddd;
+            border-color: #f0f0f0;
+            cursor: default;
+        }
+
+        .no-slots-message {
+            font-size: 0.9rem;
+            color: #999;
+            font-weight: 300;
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        /* ---- STEP 4: Review & Confirm ---- */
+        .review-section {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .review-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .review-section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #2c2c2c;
+            margin-bottom: 15px;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+        }
+
+        .review-label {
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 300;
+        }
+
+        .review-value {
+            font-size: 0.9rem;
+            color: #2c2c2c;
+            font-weight: 300;
+            text-align: right;
+        }
+
+        .review-service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 8px 0;
+        }
+
+        .review-service-name {
+            font-size: 0.95rem;
+            color: #2c2c2c;
+            font-weight: 300;
+        }
+
+        .review-service-price {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 300;
+        }
+
+        .review-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-top: 12px;
+            margin-top: 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .review-total-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: #2c2c2c;
+        }
+
+        .review-total-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            color: #2c2c2c;
+        }
+
+        .review-location {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* Navigation Buttons */
+        .booking-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-back {
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            color: #999;
+            font-weight: 300;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            transition: color 0.3s ease;
+            padding: 12px 0;
+        }
+
+        .btn-back:hover {
+            color: #2c2c2c;
+        }
+
+        .btn-next {
+            display: inline-block;
+            padding: 14px 45px;
+            background-color: #2c2c2c;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-next:hover {
+            background-color: #4a4a4a;
+        }
+
+        .btn-next:disabled {
+            background-color: #ddd;
+            cursor: default;
+        }
+
+        /* Confirmation Screen */
+        .confirmation-screen {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .confirmation-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 25px;
+            border: 2px solid #2c2c2c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirmation-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #2c2c2c;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .confirmation-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 300;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-message {
+            font-size: 0.95rem;
+            color: #999;
+            font-weight: 300;
+            line-height: 1.7;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Loading spinner */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(250, 250, 250, 0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.visible {
+            display: flex;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #e0e0e0;
+            border-top: 2px solid #2c2c2c;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 300;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            /* Progress bar */
+            .progress-step .step-label {
+                font-size: 0.55rem;
+                letter-spacing: 0.5px;
+            }
+
+            .progress-step .step-number {
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
+            }
+
+            .progress-line {
+                top: 15px;
+            }
+
+            .booking-progress {
+                margin-bottom: 35px;
+            }
+
+            /* Step titles */
+            .step-title {
+                font-size: 1.4rem;
+            }
+
+            .step-subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 25px;
+            }
+
+            /* Service category */
+            .service-category-title {
+                font-size: 1.1rem;
+            }
+
+            /* Service selection cards */
+            .service-select-item {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 18px 0;
+            }
+
+            .service-select-name {
+                font-size: 1.1rem;
+            }
+
+            .service-select-description {
+                font-size: 0.8rem;
+            }
+
+            .service-select-price {
+                margin-left: 40px;
+                width: auto;
+            }
+
+            .service-checkbox {
+                width: 20px;
+                height: 20px;
+            }
+
+            /* Form fields */
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .form-section-title {
+                font-size: 1.1rem;
+            }
+
+            .form-group label {
+                font-size: 0.75rem;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 16px; /* prevents iOS zoom on focus */
+                padding: 10px 0;
+            }
+
+            /* Pills - wrap nicely on small screens */
+            .option-group {
+                gap: 8px;
+            }
+
+            .option-pill {
+                padding: 7px 14px;
+                font-size: 0.8rem;
+            }
+
+            /* Calendar */
+            .calendar-month {
+                font-size: 1.2rem;
+            }
+
+            .calendar-day {
+                padding: 8px 0;
+                font-size: 0.85rem;
+            }
+
+            .calendar-day-label {
+                font-size: 0.6rem;
+            }
+
+            .calendar-nav button {
+                width: 30px;
+                height: 30px;
+            }
+
+            /* Time slots */
+            .time-slots-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+
+            .time-slot {
+                padding: 9px 5px;
+                font-size: 0.8rem;
+            }
+
+            .time-slots-title {
+                font-size: 1rem;
+            }
+
+            /* Cart summary (sticky bottom) */
+            .cart-summary {
+                padding: 14px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .cart-details {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .cart-value {
+                font-size: 1.1rem;
+            }
+
+            .cart-label {
+                font-size: 0.65rem;
+            }
+
+            /* Navigation buttons */
+            .booking-nav {
+                flex-direction: column-reverse;
+                gap: 12px;
+                margin-top: 30px;
+                padding-top: 20px;
+            }
+
+            .btn-next {
+                width: 100%;
+                text-align: center;
+                padding: 14px 30px;
+            }
+
+            .btn-back {
+                padding: 8px 0;
+            }
+
+            /* Review section */
+            .review-item {
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .review-value {
+                text-align: left;
+            }
+
+            .review-service-item {
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .review-total-value {
+                font-size: 1.1rem;
+            }
+
+            /* Confirmation */
+            .confirmation-screen {
+                padding: 40px 0;
+            }
+
+            .confirmation-title {
+                font-size: 1.6rem;
+            }
+
+            .confirmation-message {
+                font-size: 0.85rem;
+            }
+
+            /* Add bottom padding so cart doesn't cover content */
+            .minimal-main {
+                padding-bottom: 140px;
+            }
+        }
+
+        /* Extra small screens (iPhone SE, etc.) */
+        @media (max-width: 380px) {
+            .progress-step .step-label {
+                font-size: 0.5rem;
+            }
+
+            .progress-step .step-number {
+                width: 26px;
+                height: 26px;
+                font-size: 0.7rem;
+            }
+
+            .service-select-name {
+                font-size: 1rem;
+            }
+
+            .time-slots-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .option-pill {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .calendar-day {
+                padding: 6px 0;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .service-select-item {
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .service-select-item:active {
+                background: #f5f5f5;
+            }
+
+            .option-pill:active {
+                transform: scale(0.97);
+            }
+
+            .time-slot:active:not(.disabled) {
+                transform: scale(0.97);
+            }
+
+            .calendar-day:active:not(.disabled):not(.empty) {
+                background: #f0f0f0;
+            }
+
+            /* Larger tap targets for touch */
+            .calendar-nav button {
+                width: 40px;
+                height: 40px;
+            }
+
+            .option-pill {
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .time-slot {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Top Bar -->
@@ -23,26 +1062,1188 @@
         </div>
     </div>
 
-    <header class="page-header" style="display: none;">
-        <a href="index.html" class="back-link">← Home</a>
-        <nav class="top-nav">
-            <a href="about.html" class="top-link">About Me</a>
-            <a href="services.html" class="top-link">Services</a>
-        </nav>
-    </header>
-
     <main class="minimal-main">
         <section class="minimal-section">
             <h1 class="page-title">Book an Appointment</h1>
-            
-            <!-- Calendly inline widget begin -->
-<div class="calendly-inline-widget" data-url="https://calendly.com/josephfyang?hide_gdpr_banner=1" style="min-width:320px;height:700px;"></div>
-<script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-<!-- Calendly inline widget end -->
 
+            <!-- Progress Bar -->
+            <div class="booking-progress">
+                <div class="progress-line">
+                    <div class="progress-line-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Services</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Details</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Date & Time</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Confirm</div>
+                </div>
+            </div>
+
+            <!-- STEP 1: Service Selection -->
+            <div class="booking-step active" id="step1">
+                <h2 class="step-title">Select Your Services</h2>
+                <p class="step-subtitle">Choose one or more services below</p>
+                <div id="serviceList"></div>
+                <div class="booking-nav">
+                    <div></div>
+                    <button class="btn-next" id="toStep2" disabled>Continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Consultation Form -->
+            <div class="booking-step" id="step2">
+                <h2 class="step-title">Tell Us About You</h2>
+                <p class="step-subtitle">This helps us prepare for your visit</p>
+                <div id="consultationForm"></div>
+                <div class="booking-nav">
+                    <button class="btn-back" id="backTo1">← Back to services</button>
+                    <button class="btn-next" id="toStep3">Continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Date & Time -->
+            <div class="booking-step" id="step3">
+                <h2 class="step-title">Choose a Date & Time</h2>
+                <p class="step-subtitle" id="durationNote"></p>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <span class="calendar-month" id="calendarMonth"></span>
+                        <div class="calendar-nav">
+                            <button id="prevMonth">‹</button>
+                            <button id="nextMonth">›</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+                <div class="time-slots-container" id="timeSlotsContainer" style="display:none;">
+                    <h3 class="time-slots-title" id="timeSlotsTitle"></h3>
+                    <div class="time-slots-grid" id="timeSlotsGrid"></div>
+                </div>
+                <div class="booking-nav">
+                    <button class="btn-back" id="backTo2">← Back to details</button>
+                    <button class="btn-next" id="toStep4" disabled>Continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 4: Review & Confirm -->
+            <div class="booking-step" id="step4">
+                <h2 class="step-title">Review & Confirm</h2>
+                <p class="step-subtitle">Please review your booking details</p>
+                <div id="reviewContent"></div>
+                <div class="booking-nav">
+                    <button class="btn-back" id="backTo3">← Back to date & time</button>
+                    <button class="btn-next" id="confirmBooking">Confirm Booking</button>
+                </div>
+            </div>
+
+            <!-- Confirmation Screen -->
+            <div class="booking-step" id="stepConfirm">
+                <div class="confirmation-screen">
+                    <div class="confirmation-icon">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <h2 class="confirmation-title">You're All Set</h2>
+                    <p class="confirmation-message">
+                        A confirmation has been sent to your email. We look forward to seeing you!
+                    </p>
+                    <div style="margin-top: 40px;">
+                        <a href="index.html" class="cta-button">Back to Home</a>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <!-- Cart Summary (shows when services selected) -->
+    <div class="cart-summary" id="cartSummary">
+        <div class="cart-details">
+            <div class="cart-detail">
+                <span class="cart-label">Services</span>
+                <span class="cart-value" id="cartCount">0</span>
+            </div>
+            <div class="cart-detail">
+                <span class="cart-label">Duration</span>
+                <span class="cart-value" id="cartDuration">0 min</span>
+            </div>
+            <div class="cart-detail">
+                <span class="cart-label">Total</span>
+                <span class="cart-value" id="cartTotal">$0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Confirming your booking...</div>
+    </div>
+
+    <script>
+    /* ==========================================================
+       CONFIGURATION — EDIT THIS SECTION TO CUSTOMIZE
+       ==========================================================
+       
+       HOW TO EDIT:
+       - To add a service: copy an existing service object and modify it
+       - To remove a service: delete the entire { ... } block
+       - To change availability: update the days/hours below
+       - To change form fields: edit the formFields array for each service
+       
+       FORM FIELD TYPES:
+       - "text"     → single line text input
+       - "email"    → email input
+       - "tel"      → phone number input
+       - "textarea" → multi-line text area
+       - "select"   → dropdown (provide "options" array)
+       - "pills"    → pill-style selector (provide "options" array)
+       
+       ========================================================== */
+
+    const CONFIG = {
+
+        // ---- BUSINESS INFO ----
+        businessName: "Colibrí Esthetic",
+        businessEmail: "val.mcaballero@gmail.com",
+        businessLocation: "3535 Cahuenga Blvd W Unit 203, Studio City, CA 90068",
+
+        // ---- FIREBASE SETTINGS ----
+        // Replace with your Firebase project config
+        // Go to: https://console.firebase.google.com → Your Project → Project Settings → General → Your apps → Config
+        firebase: {
+            apiKey: "AIzaSyDHw4gTPCvUAE4Y055MgKrbK-D6w0PguSY",
+            authDomain: "colibri-esthetic-8d1f5.firebaseapp.com",
+            projectId: "colibri-esthetic-8d1f5",
+            storageBucket: "colibri-esthetic-8d1f5.firebasestorage.app",
+            messagingSenderId: "1018077265442",
+            appId: "1:1018077265442:web:05eb952c630c9e6b00147b"
+        },
+
+        // ---- EMAILJS SETTINGS ----
+        // Sign up free at https://www.emailjs.com
+        // Replace with your EmailJS credentials
+        emailjs: {
+            publicKey: "hxW0sqvyTRS53x7Ae",
+            serviceId: "service_8ieevij",
+            templateId: "template_hlzctm3",       // order confirmation (to Valerie)
+            autoReplyTemplateId: "template_v5lztaf" // auto-reply (to client)
+        },
+
+        // ---- TIME SLOT SETTINGS ----
+        slotInterval: 30,       // minutes between each bookable slot
+        bufferTime: 15,         // minutes buffer between appointments
+        minAdvanceHours: 2,     // minimum hours in advance a client can book
+        maxAdvanceWeeks: 8,     // how many weeks ahead clients can book
+
+        // ---- AVAILABILITY ----
+        // Set available hours for each day. Use null for closed days.
+        // Hours in 24h format: { start: "10:00", end: "18:00" }
+        availability: {
+            sunday:    { start: "08:00", end: "20:00" },
+            monday:    null,
+            tuesday:   null,
+            wednesday: null,
+            thursday:  null,
+            friday:    { start: "12:15", end: "21:00" },
+            saturday:  { start: "08:00", end: "20:00" }
+        },
+
+        // ---- BLOCKED DATES ----
+        // Add specific dates that are unavailable (format: "YYYY-MM-DD")
+        blockedDates: [
+            // "2026-03-15",
+            // "2026-04-01",
+        ],
+
+        // ---- SERVICES ----
+        // To add a service: copy a block, change id/name/duration/price/description
+        // hasConsultationForm: true → shows the full consultation form from the PDF
+        // formFields: additional fields specific to THIS service only
+        services: [
+            // ──── BYE-BYE HAIR ────
+            {
+                id: "brow-wax",
+                name: "Brow Wax & Shape",
+                category: "Bye-Bye Hair",
+                duration: 20,
+                price: 25,
+                description: "Brow wax and shape for clean, defined brows",
+                hasConsultationForm: false,
+                formFields: []
+            },
+            {
+                id: "upper-lip",
+                name: "Upper Lip",
+                category: "Bye-Bye Hair",
+                duration: 10,
+                price: 12,
+                description: "Upper lip hair removal",
+                hasConsultationForm: false,
+                formFields: []
+            },
+            {
+                id: "underarm",
+                name: "Underarm",
+                category: "Bye-Bye Hair",
+                duration: 15,
+                price: 18,
+                description: "Underarm hair removal",
+                hasConsultationForm: false,
+                formFields: []
+            },
+
+            // ──── NO-MAKEUP LOOK ────
+            {
+                id: "lash-lift",
+                name: "Lash Lift",
+                category: "No-Makeup Look",
+                duration: 60,
+                price: 65,
+                description: "Enhances natural lashes with gentle lifting treatment",
+                hasConsultationForm: false,
+                formFields: []
+            },
+            {
+                id: "brow-lamination",
+                name: "Brow Lamination",
+                category: "No-Makeup Look",
+                duration: 45,
+                price: 75,
+                description: "Smooths and sets brow hairs for a full, defined look",
+                hasConsultationForm: false,
+                formFields: []
+            },
+            {
+                id: "the-combo",
+                name: "The Combo (Lift & Lami)",
+                category: "No-Makeup Look",
+                duration: 90,
+                price: 120,
+                description: "Lash lift and brow lamination together",
+                hasConsultationForm: false,
+                formFields: []
+            },
+            {
+                id: "add-tint",
+                name: "Add Tint",
+                category: "No-Makeup Look",
+                duration: 10,
+                price: 10,
+                description: "Add a tint to your lash lift or brow lamination",
+                hasConsultationForm: false,
+                formFields: []
+            },
+
+            // ──── SKIN REJUVENATION ────
+            {
+                id: "keepin-it-simple",
+                name: "Keepin' It Simple",
+                category: "Skin Rejuvenation",
+                duration: 45,
+                price: 70,
+                description: "Skin analysis, double cleanse, extractions, enzyme treatment, and high frequency",
+                hasConsultationForm: false,
+                formFields: []
+            },
+            {
+                id: "peel-2-perfection",
+                name: "Peel 2 Perfection",
+                category: "Skin Rejuvenation",
+                duration: 75,
+                price: 170,
+                description: "Mild AML peel *tree nut allergy*, resurfacing peel. *Consultation Form Required*",
+                hasConsultationForm: true,
+                formFields: []
+            },
+            {
+                id: "skin-renewal",
+                name: "Skin Renewal",
+                category: "Skin Rejuvenation",
+                duration: 75,
+                price: 250,
+                description: "Nano/micro-needling treatment. *Consultation Form Required*",
+                hasConsultationForm: true,
+                formFields: []
+            },
+
+            // ──── ADD-ONS ────
+            {
+                id: "diamond-tip-dermabrasion",
+                name: "Diamond Tip Dermabrasion",
+                category: "Add-Ons",
+                duration: 20,
+                price: 45,
+                description: "Diamond tip dermabrasion for smoother, refined skin",
+                hasConsultationForm: false,
+                formFields: []
+            },
+            {
+                id: "led-therapy",
+                name: "LED Light Therapy",
+                category: "Add-Ons",
+                duration: 20,
+                price: 15,
+                description: "Targeted light treatment to calm inflammation, reduce acne, and stimulate collagen",
+                hasConsultationForm: false,
+                formFields: []
+            }
+        ],
+
+        // ---- SHARED FORM FIELDS ----
+        // These appear for ALL bookings regardless of service
+        sharedFormFields: [
+            { name: "firstName", label: "First Name", type: "text", required: true },
+            { name: "lastName", label: "Last Name", type: "text", required: true, row: "name" },
+            { name: "email", label: "Email Address", type: "email", required: true },
+            { name: "phone", label: "Phone Number", type: "tel", required: true, row: "contact" },
+            { name: "dateOfBirth", label: "Date of Birth", type: "date", required: true }
+        ],
+
+        // ---- CONSULTATION FORM FIELDS ----
+        // These match the PDF consultation form exactly
+        // Only shown when a selected service has hasConsultationForm: true
+        consultationFormFields: {
+
+            // -- Skin Type and Concerns --
+            skinType: {
+                sectionTitle: "Skin Type & Concerns",
+                fields: [
+                    { name: "skinType", label: "Skin Type", type: "pills", options: ["Dry", "Oily", "Combination", "Normal", "Sensitive"], required: true },
+                    { name: "skinConcerns", label: "Skin Concerns (select all that apply)", type: "checkboxes", options: ["Acne", "Fine Lines/Wrinkles", "Rosacea", "Hyperpigmentation", "Large Pores", "Under-eye Circles"], required: false },
+                    { name: "skinConcernsOther", label: "Other Skin Concerns", type: "text", placeholder: "Any other concerns...", required: false },
+                    { name: "fitzpatrickScale", label: "Which best describes your skin?", type: "select", options: [
+                        "1 — Always burns easily, never tans",
+                        "2 — Always burns, tans slightly",
+                        "3 — Burns moderately, tans gradually",
+                        "4 — Seldom burns, always tans well",
+                        "5 — Rarely burns, deep tan",
+                        "6 — Never burns, deeply pigmented"
+                    ], required: true },
+                    { name: "areasOfConcern", label: "Areas of concern (select all that apply)", type: "checkboxes", options: [
+                        "Sun Damage", "Wrinkles/Fine Lines", "Breakouts/Acne",
+                        "Dull/Dry Skin", "Flaky Skin", "Dehydrated",
+                        "Blackheads", "Whiteheads", "Excessive Oil/Shine",
+                        "Rosacea", "Broken Capillaries", "Redness/Ruddiness",
+                        "Sun Spots", "Liver Spots", "Brown Spots"
+                    ], required: false },
+                    { name: "areasOfConcernDetails", label: "Please explain any concerns in detail", type: "textarea", placeholder: "Describe any specific areas or details...", required: false }
+                ]
+            },
+
+            // -- Allergies & Sensitivities --
+            allergies: {
+                sectionTitle: "Allergies & Sensitivities",
+                fields: [
+                    { name: "cosmeticAllergies", label: "Are you allergic to any cosmetic ingredients?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "cosmeticAllergiesList", label: "If yes, please list", type: "text", placeholder: "List allergies...", required: false, showIf: { field: "cosmeticAllergies", value: "Yes" } },
+                    { name: "sensitiveSkin", label: "Do you have sensitive skin?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "allergyReactions", label: "Have you had allergic reactions to any of the following? (select all that apply)", type: "checkboxes", options: [
+                        "Cosmetics", "AHAs", "Fragrance", "Shellfish", "Latex",
+                        "Drugs", "Medicine", "Food", "Animals", "Sunscreens",
+                        "Iodine", "Pollen"
+                    ], required: false },
+                    { name: "allergyReactionsOther", label: "Other allergic reactions", type: "text", placeholder: "Any other allergies...", required: false },
+                    { name: "allergyDetails", label: "If yes to any above, please describe", type: "textarea", placeholder: "Describe your allergic reactions in detail...", required: false }
+                ]
+            },
+
+            // -- Skin History --
+            skinHistory: {
+                sectionTitle: "Skin History",
+                fields: [
+                    { name: "previousFacial", label: "Have you ever had a facial treatment before?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "previousPeelsLaser", label: "Have you had chemical peels, laser, or microdermabrasion?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "retinolUse", label: "Do you use Retin-A, Renova, Adapalene, Hydroxyl Acid, or Retinol/Vitamin A products?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "retinolLastMonth", label: "If yes, have you used them in the last month?", type: "pills", options: ["Yes", "No", "N/A"], required: false, showIf: { field: "retinolUse", value: "Yes" } },
+                    { name: "acneMedication", label: "Have you used an acne medication?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "acneMedDetails", label: "If yes — when and which medication?", type: "text", placeholder: "e.g. Accutane, 3 months ago", required: false, showIf: { field: "acneMedication", value: "Yes" } },
+                    { name: "hairRemoval", label: "Any hair removal in the past 5 weeks? (waxing, electrolysis, laser, etc.)", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "hairRemovalDetails", label: "If yes, please describe", type: "text", placeholder: "Type of hair removal and area...", required: false, showIf: { field: "hairRemoval", value: "Yes" } },
+                    { name: "botoxFillers", label: "Botox, Restylane, or collagen injections in the past 5 weeks?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "skincareRoutine", label: "What's your usual day/night skincare routine?", type: "textarea", placeholder: "List brands, cleansers, creams, exfoliants, masks, toners, serums, sunscreens, AHAs, BHAs, etc.", required: false }
+                ]
+            },
+
+            // -- Health / Medical --
+            health: {
+                sectionTitle: "Health / Medical",
+                fields: [
+                    { name: "pregnant", label: "Are you pregnant?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "breastfeeding", label: "If yes, are you breastfeeding?", type: "pills", options: ["Yes", "No", "N/A"], required: false, showIf: { field: "pregnant", value: "Yes" } },
+                    { name: "oralContraceptive", label: "Are you taking any oral contraceptive?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "hormoneTherapy", label: "Are you undergoing hormonal replacement therapy?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "skinConditions", label: "Have you been diagnosed with eczema, psoriasis, or similar?", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "medicalConditions", label: "Do you have any medical conditions? (blood thinners, diabetes, epilepsy, HIV/Hepatitis, heart conditions, pacemaker, etc.)", type: "pills", options: ["Yes", "No"], required: true },
+                    { name: "medicalConditionsDetails", label: "If yes, please specify", type: "textarea", placeholder: "Describe medical conditions...", required: false, showIf: { field: "medicalConditions", value: "Yes" } }
+                ]
+            },
+
+            // -- Additional Info --
+            additional: {
+                sectionTitle: "Additional Information",
+                fields: [
+                    { name: "anythingElse", label: "Is there anything else you'd like us to know to help create your perfect treatment?", type: "textarea", placeholder: "Any additional details...", required: false }
+                ]
+            }
+        }
+    };
+
+
+    /* ==========================================================
+       BOOKING SYSTEM ENGINE — NO NEED TO EDIT BELOW
+       ========================================================== */
+
+    // State
+    let state = {
+        currentStep: 1,
+        selectedServices: [],
+        formData: {},
+        selectedDate: null,
+        selectedTime: null,
+        currentMonth: new Date().getMonth(),
+        currentYear: new Date().getFullYear(),
+        existingBookings: []
+    };
+
+    // Initialize Firebase
+    let db = null;
+    function initFirebase() {
+        try {
+            if (CONFIG.firebase.apiKey !== "YOUR_API_KEY") {
+                firebase.initializeApp(CONFIG.firebase);
+                db = firebase.firestore();
+                console.log("Firebase connected");
+            } else {
+                console.warn("Firebase not configured — running in demo mode. Bookings won't be saved.");
+            }
+        } catch (e) {
+            console.warn("Firebase init error:", e);
+        }
+    }
+
+    // Initialize EmailJS
+    function initEmailJS() {
+        try {
+            if (CONFIG.emailjs.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY") {
+                emailjs.init(CONFIG.emailjs.publicKey);
+                console.log("EmailJS connected");
+            } else {
+                console.warn("EmailJS not configured — emails won't be sent.");
+            }
+        } catch (e) {
+            console.warn("EmailJS init error:", e);
+        }
+    }
+
+    // ---- RENDER SERVICES ----
+    function renderServices() {
+        const container = document.getElementById('serviceList');
+        
+        // Group by category
+        const categories = {};
+        CONFIG.services.forEach(service => {
+            const cat = service.category || 'Other';
+            if (!categories[cat]) categories[cat] = [];
+            categories[cat].push(service);
+        });
+
+        let html = '';
+        Object.keys(categories).forEach(catName => {
+            html += `<div class="service-category">`;
+            html += `<div class="service-category-title">${catName}</div>`;
+            categories[catName].forEach(service => {
+                const durationText = service.duration ? `~${service.duration} min` : '';
+                html += `
+                <div class="service-select-item" data-id="${service.id}" onclick="toggleService('${service.id}')">
+                    <div class="service-checkbox">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="service-select-info">
+                        <div class="service-select-name">${service.name}</div>
+                        ${durationText ? `<div class="service-select-duration">${durationText}</div>` : ''}
+                        <div class="service-select-description">${service.description}</div>
+                    </div>
+                    <div class="service-select-price">$${service.price}</div>
+                </div>`;
+            });
+            html += `</div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    function toggleService(id) {
+        const idx = state.selectedServices.indexOf(id);
+        if (idx === -1) {
+            state.selectedServices.push(id);
+        } else {
+            state.selectedServices.splice(idx, 1);
+        }
+        updateServiceUI();
+        updateCart();
+    }
+
+    function updateServiceUI() {
+        document.querySelectorAll('.service-select-item').forEach(el => {
+            el.classList.toggle('selected', state.selectedServices.includes(el.dataset.id));
+        });
+        document.getElementById('toStep2').disabled = state.selectedServices.length === 0;
+    }
+
+    function getSelectedServices() {
+        return CONFIG.services.filter(s => state.selectedServices.includes(s.id));
+    }
+
+    function getTotalDuration() {
+        return getSelectedServices().reduce((sum, s) => sum + s.duration, 0);
+    }
+
+    function getTotalPrice() {
+        return getSelectedServices().reduce((sum, s) => sum + s.price, 0);
+    }
+
+    function updateCart() {
+        const cart = document.getElementById('cartSummary');
+        const count = state.selectedServices.length;
+        cart.classList.toggle('visible', count > 0);
+        document.getElementById('cartCount').textContent = count;
+        document.getElementById('cartDuration').textContent = getTotalDuration() + ' min';
+        document.getElementById('cartTotal').textContent = '$' + getTotalPrice();
+    }
+
+    // ---- RENDER CONSULTATION FORM ----
+    function renderForm() {
+        const container = document.getElementById('consultationForm');
+        let html = '';
+
+        // Shared fields first (appears for ALL bookings)
+        html += '<div class="form-section">';
+        html += '<div class="form-section-title">Personal Information</div>';
+        html += renderFieldGroup(CONFIG.sharedFormFields);
+        html += '</div>';
+
+        // Check if any selected service requires the full consultation form
+        const services = getSelectedServices();
+        const needsConsultation = services.some(s => s.hasConsultationForm);
+
+        if (needsConsultation) {
+            // Render each section of the consultation form
+            const sections = CONFIG.consultationFormFields;
+            Object.keys(sections).forEach(sectionKey => {
+                const section = sections[sectionKey];
+                html += '<div class="form-section">';
+                html += `<div class="form-section-title">${section.sectionTitle}</div>`;
+                html += renderFieldGroup(section.fields, 'consult_');
+                html += '</div>';
+            });
+        }
+
+        // Service-specific extra fields (if any)
+        services.forEach(service => {
+            if (service.formFields && service.formFields.length > 0) {
+                html += '<div class="form-section">';
+                html += `<div class="form-section-title">${service.name}</div>`;
+                html += renderFieldGroup(service.formFields, service.id + '_');
+                html += '</div>';
+            }
+        });
+
+        container.innerHTML = html;
+
+        // Restore any previously entered data
+        Object.keys(state.formData).forEach(key => {
+            const el = document.querySelector(`[data-field="${key}"]`);
+            if (el) {
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+                    el.value = state.formData[key];
+                }
+            }
+            // Restore pill selections
+            document.querySelectorAll(`.option-pill[data-field="${key}"]`).forEach(pill => {
+                pill.classList.toggle('selected', pill.dataset.value === state.formData[key]);
+            });
+            // Restore checkbox selections
+            if (Array.isArray(state.formData[key])) {
+                document.querySelectorAll(`.checkbox-pill[data-field="${key}"]`).forEach(cb => {
+                    cb.classList.toggle('selected', state.formData[key].includes(cb.dataset.value));
+                });
+            }
+        });
+
+        // Apply showIf visibility
+        updateConditionalFields();
+    }
+
+    function renderFieldGroup(fields, prefix = '') {
+        let html = '';
+        let i = 0;
+        while (i < fields.length) {
+            const field = fields[i];
+            const nextField = fields[i + 1];
+            const isRowPair = nextField && field.row && nextField.row === field.row;
+
+            if (isRowPair) {
+                html += '<div class="form-row">';
+                html += renderField(field, prefix);
+                html += renderField(nextField, prefix);
+                html += '</div>';
+                i += 2;
+            } else {
+                html += renderField(field, prefix);
+                i++;
+            }
+        }
+        return html;
+    }
+
+    function renderField(field, prefix = '') {
+        const key = prefix + field.name;
+        const req = field.required ? '<span class="required"> *</span>' : '';
+        const showIfAttr = field.showIf ? `data-showif-field="${prefix}${field.showIf.field}" data-showif-value="${field.showIf.value}"` : '';
+        const hiddenStyle = field.showIf ? ' style="display:none;"' : '';
+
+        let html = `<div class="form-group" ${showIfAttr}${hiddenStyle}>`;
+        html += `<label>${field.label}${req}</label>`;
+
+        switch (field.type) {
+            case 'text':
+            case 'email':
+            case 'tel':
+            case 'date':
+                html += `<input type="${field.type}" data-field="${key}" data-required="${field.required || false}" placeholder="${field.placeholder || ''}" oninput="saveField('${key}', this.value); updateConditionalFields();">`;
+                break;
+            case 'textarea':
+                html += `<textarea data-field="${key}" data-required="${field.required || false}" placeholder="${field.placeholder || ''}" oninput="saveField('${key}', this.value)"></textarea>`;
+                break;
+            case 'select':
+                html += `<select data-field="${key}" data-required="${field.required || false}" onchange="saveField('${key}', this.value); updateConditionalFields();">`;
+                html += `<option value="">Select...</option>`;
+                field.options.forEach(opt => {
+                    html += `<option value="${opt}">${opt}</option>`;
+                });
+                html += `</select>`;
+                break;
+            case 'pills':
+                html += `<div class="option-group">`;
+                field.options.forEach(opt => {
+                    html += `<div class="option-pill" data-field="${key}" data-value="${opt}" data-required="${field.required || false}" onclick="selectPill(this, '${key}', '${opt}')">${opt}</div>`;
+                });
+                html += `</div>`;
+                break;
+            case 'checkboxes':
+                html += `<div class="option-group" data-field-group="${key}">`;
+                field.options.forEach(opt => {
+                    html += `<div class="option-pill checkbox-pill" data-field="${key}" data-value="${opt}" data-required="${field.required || false}" onclick="toggleCheckbox(this, '${key}', '${opt}')">${opt}</div>`;
+                });
+                html += `</div>`;
+                break;
+        }
+
+        html += `</div>`;
+        return html;
+    }
+
+    function saveField(key, value) {
+        state.formData[key] = value;
+    }
+
+    function selectPill(el, key, value) {
+        el.parentElement.querySelectorAll('.option-pill').forEach(p => p.classList.remove('selected'));
+        el.classList.add('selected');
+        state.formData[key] = value;
+        updateConditionalFields();
+    }
+
+    function toggleCheckbox(el, key, value) {
+        el.classList.toggle('selected');
+        if (!Array.isArray(state.formData[key])) {
+            state.formData[key] = [];
+        }
+        if (el.classList.contains('selected')) {
+            if (!state.formData[key].includes(value)) state.formData[key].push(value);
+        } else {
+            state.formData[key] = state.formData[key].filter(v => v !== value);
+        }
+    }
+
+    function updateConditionalFields() {
+        document.querySelectorAll('[data-showif-field]').forEach(group => {
+            const watchField = group.dataset.showifField;
+            const watchValue = group.dataset.showifValue;
+            const currentValue = state.formData[watchField];
+            if (currentValue === watchValue) {
+                group.style.display = '';
+            } else {
+                group.style.display = 'none';
+                // Clear the hidden field's required status for validation
+            }
+        });
+    }
+
+    function validateForm() {
+        let valid = true;
+        const requiredElements = document.querySelectorAll('[data-required="true"]');
+        const checked = new Set(); // track which field groups we've already validated
+
+        requiredElements.forEach(el => {
+            const key = el.dataset.field;
+            if (checked.has(key)) return;
+
+            // Skip fields inside hidden conditional groups
+            const parentGroup = el.closest('.form-group[data-showif-field]');
+            if (parentGroup && parentGroup.style.display === 'none') return;
+
+            if (el.classList.contains('option-pill') || el.classList.contains('checkbox-pill')) {
+                // For pills/checkboxes, check if any in the group is selected
+                const group = el.parentElement;
+                const groupField = el.dataset.field;
+                checked.add(groupField);
+
+                const hasValue = el.classList.contains('checkbox-pill')
+                    ? (Array.isArray(state.formData[groupField]) && state.formData[groupField].length > 0)
+                    : !!state.formData[groupField];
+
+                if (!hasValue) {
+                    valid = false;
+                    group.style.outline = '1px solid #c0392b';
+                    group.style.outlineOffset = '5px';
+                    group.style.borderRadius = '3px';
+                } else {
+                    group.style.outline = 'none';
+                }
+            } else {
+                if (!el.value || !el.value.trim()) {
+                    valid = false;
+                    el.style.borderBottomColor = '#c0392b';
+                } else {
+                    el.style.borderBottomColor = '#e0e0e0';
+                }
+            }
+        });
+
+        if (!valid) {
+            // Scroll to first error
+            const firstError = document.querySelector('[style*="c0392b"]');
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        return valid;
+    }
+
+    // ---- CALENDAR ----
+    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        const monthLabel = document.getElementById('calendarMonth');
+        const now = new Date();
+        const maxDate = new Date();
+        maxDate.setDate(maxDate.getDate() + CONFIG.maxAdvanceWeeks * 7);
+
+        monthLabel.textContent = `${MONTHS[state.currentMonth]} ${state.currentYear}`;
+
+        let html = DAYS.map(d => `<div class="calendar-day-label">${d}</div>`).join('');
+
+        const firstDay = new Date(state.currentYear, state.currentMonth, 1).getDay();
+        const daysInMonth = new Date(state.currentYear, state.currentMonth + 1, 0).getDate();
+
+        // Empty cells before first day
+        for (let i = 0; i < firstDay; i++) {
+            html += '<div class="calendar-day empty"></div>';
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(state.currentYear, state.currentMonth, day);
+            const dateStr = formatDate(date);
+            const dayOfWeek = date.getDay();
+            const dayKey = DAY_KEYS[dayOfWeek];
+            const isAvailable = CONFIG.availability[dayKey] !== null;
+            const isBlocked = CONFIG.blockedDates.includes(dateStr);
+            const isPast = date < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const isTooFar = date > maxDate;
+            const isToday = date.toDateString() === now.toDateString();
+            const isSelected = state.selectedDate === dateStr;
+            const disabled = !isAvailable || isBlocked || isPast || isTooFar;
+
+            let classes = 'calendar-day';
+            if (disabled) classes += ' disabled';
+            if (isToday) classes += ' today';
+            if (isSelected) classes += ' selected';
+
+            html += `<div class="${classes}" ${disabled ? '' : `onclick="selectDate('${dateStr}')"`}>${day}</div>`;
+        }
+
+        grid.innerHTML = html;
+
+        // Update duration note
+        document.getElementById('durationNote').textContent =
+            `Your appointment will be ~${getTotalDuration() + CONFIG.bufferTime} min total`;
+    }
+
+    function selectDate(dateStr) {
+        state.selectedDate = dateStr;
+        state.selectedTime = null;
+        renderCalendar();
+        loadTimeSlots(dateStr);
+        document.getElementById('toStep4').disabled = true;
+    }
+
+    async function loadTimeSlots(dateStr) {
+        const container = document.getElementById('timeSlotsContainer');
+        const grid = document.getElementById('timeSlotsGrid');
+        const title = document.getElementById('timeSlotsTitle');
+        container.style.display = 'block';
+
+        const date = new Date(dateStr + 'T00:00:00');
+        const dayKey = DAY_KEYS[date.getDay()];
+        const hours = CONFIG.availability[dayKey];
+
+        if (!hours) {
+            grid.innerHTML = '<div class="no-slots-message">Not available on this day</div>';
+            return;
+        }
+
+        const fmtDate = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        title.textContent = `Available times for ${fmtDate}`;
+
+        // Fetch existing bookings for this date
+        let bookedSlots = [];
+        if (db) {
+            try {
+                const snapshot = await db.collection('bookings')
+                    .where('date', '==', dateStr)
+                    .where('status', '==', 'confirmed')
+                    .get();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    bookedSlots.push({
+                        start: data.timeStart,
+                        end: data.timeEnd
+                    });
+                });
+            } catch (e) {
+                console.warn("Could not fetch bookings:", e);
+            }
+        }
+
+        const totalNeeded = getTotalDuration() + CONFIG.bufferTime;
+        const [startH, startM] = hours.start.split(':').map(Number);
+        const [endH, endM] = hours.end.split(':').map(Number);
+        const dayStartMin = startH * 60 + startM;
+        const dayEndMin = endH * 60 + endM;
+        const now = new Date();
+
+        let slots = [];
+        for (let min = dayStartMin; min + totalNeeded <= dayEndMin; min += CONFIG.slotInterval) {
+            const slotStart = min;
+            const slotEnd = min + totalNeeded;
+
+            // Check if slot is in the past
+            const slotDate = new Date(dateStr + 'T00:00:00');
+            slotDate.setMinutes(slotStart);
+            if (slotDate < new Date(now.getTime() + CONFIG.minAdvanceHours * 60 * 60 * 1000)) {
+                slots.push({ time: min, disabled: true });
+                continue;
+            }
+
+            // Check overlap with existing bookings
+            const overlaps = bookedSlots.some(booked => {
+                const bStart = timeToMin(booked.start);
+                const bEnd = timeToMin(booked.end);
+                return slotStart < bEnd && slotEnd > bStart;
+            });
+
+            slots.push({ time: min, disabled: overlaps });
+        }
+
+        if (slots.length === 0 || slots.every(s => s.disabled)) {
+            grid.innerHTML = '<div class="no-slots-message">No available times on this day</div>';
+            return;
+        }
+
+        grid.innerHTML = slots.map(slot => {
+            const timeStr = minToTime(slot.time);
+            const display = formatTime12(slot.time);
+            const selected = state.selectedTime === timeStr;
+            let cls = 'time-slot';
+            if (slot.disabled) cls += ' disabled';
+            if (selected) cls += ' selected';
+            return `<div class="${cls}" ${slot.disabled ? '' : `onclick="selectTime('${timeStr}')"`}>${display}</div>`;
+        }).join('');
+    }
+
+    function selectTime(timeStr) {
+        state.selectedTime = timeStr;
+        document.querySelectorAll('.time-slot').forEach(el => {
+            el.classList.toggle('selected', el.textContent === formatTime12(timeToMin(timeStr)));
+        });
+        document.getElementById('toStep4').disabled = false;
+    }
+
+    // ---- REVIEW ----
+    function renderReview() {
+        const container = document.getElementById('reviewContent');
+        const services = getSelectedServices();
+        const date = new Date(state.selectedDate + 'T00:00:00');
+        const startMin = timeToMin(state.selectedTime);
+        const endMin = startMin + getTotalDuration();
+
+        let html = '';
+
+        // Services
+        html += '<div class="review-section">';
+        html += '<div class="review-section-title">Services</div>';
+        services.forEach(s => {
+            html += `<div class="review-service-item">
+                <span class="review-service-name">${s.name} <span style="color:#999; font-size:0.8rem;">(~${s.duration} min)</span></span>
+                <span class="review-service-price">$${s.price}</span>
+            </div>`;
+        });
+        html += `<div class="review-total">
+            <span class="review-total-label">Total</span>
+            <span class="review-total-value">$${getTotalPrice()} · ~${getTotalDuration()} min</span>
+        </div>`;
+        html += '</div>';
+
+        // Date & Time
+        html += '<div class="review-section">';
+        html += '<div class="review-section-title">Appointment</div>';
+        html += `<div class="review-item">
+            <span class="review-label">Date</span>
+            <span class="review-value">${date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+        </div>`;
+        html += `<div class="review-item">
+            <span class="review-label">Time</span>
+            <span class="review-value">${formatTime12(startMin)} – ${formatTime12(endMin)}</span>
+        </div>`;
+        html += '</div>';
+
+        // Location
+        html += '<div class="review-section">';
+        html += '<div class="review-section-title">Location</div>';
+        html += `<div class="review-location">${CONFIG.businessLocation}</div>`;
+        html += '</div>';
+
+        // Client Info
+        html += '<div class="review-section">';
+        html += '<div class="review-section-title">Your Details</div>';
+        const name = (state.formData.firstName || '') + ' ' + (state.formData.lastName || '');
+        html += `<div class="review-item"><span class="review-label">Name</span><span class="review-value">${name.trim()}</span></div>`;
+        html += `<div class="review-item"><span class="review-label">Email</span><span class="review-value">${state.formData.email || ''}</span></div>`;
+        html += `<div class="review-item"><span class="review-label">Phone</span><span class="review-value">${state.formData.phone || ''}</span></div>`;
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    // ---- CONFIRM BOOKING ----
+    async function confirmBooking() {
+        const loading = document.getElementById('loadingOverlay');
+        loading.classList.add('visible');
+
+        const startMin = timeToMin(state.selectedTime);
+        const endMin = startMin + getTotalDuration() + CONFIG.bufferTime;
+        const services = getSelectedServices();
+
+        const bookingData = {
+            date: state.selectedDate,
+            timeStart: state.selectedTime,
+            timeEnd: minToTime(endMin),
+            services: services.map(s => ({ id: s.id, name: s.name, duration: s.duration, price: s.price })),
+            totalDuration: getTotalDuration(),
+            totalPrice: getTotalPrice(),
+            clientName: (state.formData.firstName || '') + ' ' + (state.formData.lastName || ''),
+            clientEmail: state.formData.email || '',
+            clientPhone: state.formData.phone || '',
+            formData: { ...state.formData },
+            status: 'confirmed',
+            createdAt: new Date().toISOString()
+        };
+
+        // Save to Firebase
+        if (db) {
+            try {
+                // Double-check no overlap before saving
+                const snapshot = await db.collection('bookings')
+                    .where('date', '==', state.selectedDate)
+                    .where('status', '==', 'confirmed')
+                    .get();
+
+                let hasConflict = false;
+                snapshot.forEach(doc => {
+                    const existing = doc.data();
+                    const eStart = timeToMin(existing.timeStart);
+                    const eEnd = timeToMin(existing.timeEnd);
+                    if (startMin < eEnd && endMin > eStart) {
+                        hasConflict = true;
+                    }
+                });
+
+                if (hasConflict) {
+                    loading.classList.remove('visible');
+                    alert('Sorry, this time slot was just booked by someone else. Please select a different time.');
+                    goToStep(3);
+                    loadTimeSlots(state.selectedDate);
+                    return;
+                }
+
+                await db.collection('bookings').add(bookingData);
+                console.log("Booking saved to Firebase");
+            } catch (e) {
+                console.error("Error saving booking:", e);
+            }
+        }
+
+        // Send emails via EmailJS
+        if (CONFIG.emailjs.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY") {
+            try {
+                const date = new Date(state.selectedDate + 'T00:00:00');
+                const emailParams = {
+                    to_name: "Valerie",
+                    to_email: CONFIG.businessEmail,
+                    client_name: bookingData.clientName,
+                    client_email: bookingData.clientEmail,
+                    client_phone: bookingData.clientPhone,
+                    services: services.map(s => s.name).join(', '),
+                    date: date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
+                    time: formatTime12(startMin) + ' – ' + formatTime12(startMin + getTotalDuration()),
+                    total_price: '$' + getTotalPrice(),
+                    total_duration: getTotalDuration() + ' min',
+                    form_details: Object.entries(state.formData)
+                        .filter(([k, v]) => v && !['firstName', 'lastName', 'email', 'phone'].includes(k))
+                        .map(([k, v]) => `${k}: ${v}`)
+                        .join('\n')
+                };
+
+                await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, emailParams);
+                console.log("Notification email sent to Valerie");
+
+                // Send auto-reply confirmation to client
+                await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.autoReplyTemplateId, emailParams);
+                console.log("Confirmation email sent to client");
+            } catch (e) {
+                console.warn("Email error:", e);
+            }
+        }
+
+        loading.classList.remove('visible');
+        goToStep(5);
+    }
+
+    // ---- NAVIGATION ----
+    function goToStep(step) {
+        state.currentStep = step;
+
+        // Update step visibility
+        document.querySelectorAll('.booking-step').forEach(el => el.classList.remove('active'));
+        if (step <= 4) {
+            document.getElementById('step' + step).classList.add('active');
+        } else {
+            document.getElementById('stepConfirm').classList.add('active');
+        }
+
+        // Update progress bar
+        document.querySelectorAll('.progress-step').forEach(el => {
+            const s = parseInt(el.dataset.step);
+            el.classList.remove('active', 'completed');
+            if (s === step && step <= 4) el.classList.add('active');
+            if (s < step) el.classList.add('completed');
+        });
+
+        // Progress line
+        const fill = document.getElementById('progressFill');
+        fill.style.width = ((Math.min(step, 4) - 1) / 3 * 100) + '%';
+
+        // Cart visibility
+        const cart = document.getElementById('cartSummary');
+        if (step === 1 && state.selectedServices.length > 0) {
+            cart.classList.add('visible');
+        } else {
+            cart.classList.remove('visible');
+        }
+
+        // Step-specific setup
+        if (step === 2) renderForm();
+        if (step === 3) renderCalendar();
+        if (step === 4) renderReview();
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---- UTILITY FUNCTIONS ----
+    function formatDate(date) {
+        return date.getFullYear() + '-' +
+            String(date.getMonth() + 1).padStart(2, '0') + '-' +
+            String(date.getDate()).padStart(2, '0');
+    }
+
+    function timeToMin(str) {
+        const [h, m] = str.split(':').map(Number);
+        return h * 60 + m;
+    }
+
+    function minToTime(min) {
+        return String(Math.floor(min / 60)).padStart(2, '0') + ':' +
+            String(min % 60).padStart(2, '0');
+    }
+
+    function formatTime12(min) {
+        let h = Math.floor(min / 60);
+        const m = min % 60;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        return h + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+    }
+
+    // ---- EVENT LISTENERS ----
+    document.addEventListener('DOMContentLoaded', function() {
+        initFirebase();
+        initEmailJS();
+        renderServices();
+
+        // Navigation buttons
+        document.getElementById('toStep2').addEventListener('click', () => goToStep(2));
+        document.getElementById('toStep3').addEventListener('click', () => {
+            if (validateForm()) goToStep(3);
+        });
+        document.getElementById('toStep4').addEventListener('click', () => goToStep(4));
+        document.getElementById('backTo1').addEventListener('click', () => goToStep(1));
+        document.getElementById('backTo2').addEventListener('click', () => goToStep(2));
+        document.getElementById('backTo3').addEventListener('click', () => goToStep(3));
+        document.getElementById('confirmBooking').addEventListener('click', confirmBooking);
+
+        // Calendar navigation
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            const now = new Date();
+            if (state.currentMonth === now.getMonth() && state.currentYear === now.getFullYear()) return;
+            state.currentMonth--;
+            if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; }
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            const maxDate = new Date();
+            maxDate.setDate(maxDate.getDate() + CONFIG.maxAdvanceWeeks * 7);
+            const nextMonth = state.currentMonth + 1 > 11 ? 0 : state.currentMonth + 1;
+            const nextYear = state.currentMonth + 1 > 11 ? state.currentYear + 1 : state.currentYear;
+            if (new Date(nextYear, nextMonth, 1) > maxDate) return;
+            state.currentMonth = nextMonth;
+            state.currentYear = nextYear;
+            renderCalendar();
+        });
+    });
+    </script>
 </body>
 </html>

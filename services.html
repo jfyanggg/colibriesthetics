@@ -6,6 +6,36 @@
     <title>Colibrí Esthetic - Services</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        .service-category-heading {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 300;
+            color: #2c2c2c;
+            letter-spacing: 2px;
+            margin-top: 50px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2c2c2c;
+        }
+
+        .service-category-heading:first-of-type {
+            margin-top: 0;
+        }
+
+        @media (max-width: 768px) {
+            .service-category-heading {
+                font-size: 1.5rem;
+                margin-top: 35px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .service-category-heading {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Top Bar -->
@@ -34,111 +64,220 @@
     <main class="minimal-main">
         <section class="minimal-section">
             <h1 class="page-title">Services</h1>
-            
+
+            <!-- ──── BYE-BYE HAIR ──── -->
+            <h2 class="service-category-heading">Bye-Bye Hair</h2>
             <div class="service-list">
                 <div class="service-item">
                     <div class="service-header">
-                        <h3>Keepin' It Simple<p>~45 min</h3>
-                        <span class="service-price">$60</span>
+                        <h3>Brow Wax & Shape <span style="font-size: 1rem; font-weight: 300; color: #999;">~30 min</span></h3>
+                        <span class="service-price">$25</span>
                     </div>
                     <div class="service-content">
                         <div class="service-image-container">
-                            <img src="images/service1.jpg" alt="Keepin' It Simple" class="service-image">
+                            <img src="images/waxshape.jpg" alt="Brow Wax & Shape" class="service-image">
                         </div>
                         <ul class="service-details">
-                            <li>Personalized Skin Analysis</li>
-                            <li>Double Cleansing</li>
-                            <li>Gentle Exfoliation (Enzyme Treatment)</li>
-                            <li>Extractions (as needed)</li>
-                            <li>High Frequency Therapy</li>
-                        </ul>
-                    </div>
-                </div>
-
-                            <div class="service-list">
-                <div class="service-item">
-                    <div class="service-header">
-                        <h3>No Makeup Look: Lash Lift<p>~60 min</h3>
-                        <span class="service-price">$60</span>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-image-container">
-                            <img src="images/servicelash.jpg" alt="No Makeup Look" class="service-image">
-                        </div>
-                        <ul class="service-details">
-                            <li>Enhances natural eye lashes</li>
-                            <li>Gentle Lifting Treatment</li>
-                            <li>Adds definition</li>
-                            <li>Perfect for low-maintenance, mascara-ready look</li>
+                            <li>Waxing of the Eyebrows</li>
+                            <li>Shaping of the Eyebrows</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="service-item">
                     <div class="service-header">
-                        <h3>Peel to Perfection<p>~75 min</h3>
-                        <span class="service-price">$130</span>
+                        <h3>Upper Lip <span style="font-size: 1rem; font-weight: 300; color: #999;">~25 min</span></h3>
+                        <span class="service-price">$12</span>
                     </div>
                     <div class="service-content">
                         <div class="service-image-container">
-                            <img src="images/service2.jpg" alt="Peel to Perfection" class="service-image">
+                            <img src="images/upperlip.jpg" alt="Upper Lip" class="service-image">
                         </div>
                         <ul class="service-details">
-                            <li>Includes Keepin' It Simple</li>
-                            <li>Additional Chemical Peel</li>
+                            <li>Waxing of the Upper Lip</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="service-item">
                     <div class="service-header">
-                        <h3>Skin Renewal: Needling Treatment<p>~75 min</h3>
-                        <span class="service-price">$225</span>
+                        <h3>Underarm <span style="font-size: 1rem; font-weight: 300; color: #999;">~30 min per underarm</span></h3>
+                        <span class="service-price">$18</span>
                     </div>
                     <div class="service-content">
                         <div class="service-image-container">
-                            <img src="images/service3.jpg" alt="Skin Renewal" class="service-image">
+                            <img src="images/underarm.jpg" alt="Underarm" class="service-image">
                         </div>
                         <ul class="service-details">
-                            <li>Collagen-stimulating nano/micro-needling treatment</li>
+                            <li>Waxing of the Underarms</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ──── NO-MAKEUP LOOK ──── -->
+            <h2 class="service-category-heading">No-Makeup Look</h2>
+            <div class="service-list">
+                <div class="service-item">
+                    <div class="service-header">
+                        <h3>Lash Lift <span style="font-size: 1rem; font-weight: 300; color: #999;">~15 min</span></h3>
+                        <span class="service-price">$65</span>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-image-container">
+                            <img src="images/lashlift.jpg" alt="Lash Lift" class="service-image">
+                        </div>
+                        <ul class="service-details">
+                            <li>Enhance your natural lashes with a gentle lifting treatment</li>
+                            <li>Opens the eyes and adds definition</li>
+                            <li>Perfect for low maintenance, mascara-ready look</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-header">
+                        <h3>Brow Lamination <span style="font-size: 1rem; font-weight: 300; color: #999;">~15 min</span></h3>
+                        <span class="service-price">$75</span>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-image-container">
+                            <img src="images/browlamination.jpg" alt="Brow Lamination" class="service-image">
+                        </div>
+                        <ul class="service-details">
+                            <li>Smooths and sets brow hairs for fuller, lifted, and sculpted look</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-header">
+                        <h3>The Combo (Lift & Lami) <span style="font-size: 1rem; font-weight: 300; color: #999;">~30 min</span></h3>
+                        <span class="service-price">$120</span>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-image-container">
+                            <img src="images/combo.jpg" alt="The Combo" class="service-image">
+                        </div>
+                        <ul class="service-details">
+                            <li>Lash Lift and Brow Lamination together</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-header">
+                        <h3>Add Tint <span style="font-size: 1rem; font-weight: 300; color: #999;">~15 min</span></h3>
+                        <span class="service-price">$10</span>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-image-container">
+                            <img src="images/browtint.jpg" alt="Add Tint" class="service-image">
+                        </div>
+                        <ul class="service-details">
+                            <li>Add a tint to your eyebrows</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ──── SKIN REJUVENATION ──── -->
+            <h2 class="service-category-heading">Skin Rejuvenation</h2>
+            <div class="service-list">
+                <div class="service-item">
+                    <div class="service-header">
+                        <h3>Keepin' It Simple <span style="font-size: 1rem; font-weight: 300; color: #999;">~45 min</span></h3>
+                        <span class="service-price">$70</span>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-image-container">
+                            <img src="images/keepinitsimple.jpg" alt="Keepin' It Simple" class="service-image">
+                        </div>
+                        <ul class="service-details">
+                            <li>Skin Analysis</li>
+                            <li>Double Cleanse</li>
+                            <li>Extractions</li>
+                            <li>Enzyme Treatment</li>
+                            <li>High Frequency</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-header">
+                        <h3>Peel 2 Perfection <span style="font-size: 1rem; font-weight: 300; color: #999;">~75 min</span></h3>
+                        <span class="service-price">$170</span>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-image-container">
+                            <img src="images/peeltoperfection.jpg" alt="Peel 2 Perfection" class="service-image">
+                        </div>
+                        <ul class="service-details">
+                            <li>Mild AML Peel <span style="font-size: 0.85rem; font-weight: 300; color: #999;">*Tree Nut Allergy*</span></li>
+                            <li>Resurfacing Peel</li>
+                            <li>Treat Yourself <span style="font-size: 0.85rem; font-weight: 300; color: #999;">*5 Peel Treatments $550*</span></li>
+                            <li><span style="font-size: 0.85rem; font-weight: 300; color: #999;">*Consultation Form Required*</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-header">
+                        <h3>Skin Renewal: Needling Treatment <span style="font-size: 1rem; font-weight: 300; color: #999;">~75 min</span></h3>
+                        <span class="service-price">$250</span>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-image-container">
+                            <img src="images/needling.jpg" alt="Skin Renewal" class="service-image">
+                        </div>
+                        <ul class="service-details">
+                            <li>Collagen-stimulating nano or micro-needling treatment</li>
                             <li>Improves fine lines, texture, and scarring</li>
-                            <li>Includes personalized serums for optimal results</li>
+                            <li>Customized serums for optimal results</li>
+                            <li>Treat Yourself <span style="font-size: 0.85rem; font-weight: 300; color: #999;">*4 needling treatments $925*</span></li>
+                            <li><span style="font-size: 0.85rem; font-weight: 300; color: #999;">*Consultation Form Required*</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ──── ADD-ONS ──── -->
+            <h2 class="service-category-heading">Add-Ons</h2>
+            <div class="service-list">
+                <div class="service-item">
+                    <div class="service-header">
+                        <h3>Diamond Tip Dermabrasion <span style="font-size: 1rem; font-weight: 300; color: #999;">~20 min</span></h3>
+                        <span class="service-price">$45</span>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-image-container">
+                            <img src="images/dermabrasion.jpg" alt="Diamond Tip Dermabrasion" class="service-image">
+                        </div>
+                        <ul class="service-details">
+                            <li>Physical Exfoliation</li>
+                            <li>Cleans up dead skin</li>
+                            <li>Collagen Stimulation</li>
+                            <li>Improves skin texture and tone</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="service-item">
                     <div class="service-header">
-                        <h3>LED Light Therapy<p>(Optional Add-On)~20 min</h3>
+                        <h3>LED Light Therapy <span style="font-size: 1rem; font-weight: 300; color: #999;">~20 min</span></h3>
                         <span class="service-price">$15</span>
                     </div>
                     <div class="service-content">
                         <div class="service-image-container">
-                            <img src="images/service4.jpg" alt="LED Light Therapy" class="service-image">
+                            <img src="images/lighttherapy.jpg" alt="LED Light Therapy" class="service-image">
                         </div>
                         <ul class="service-details">
                             <li>Targeted light treatment</li>
-                            <li>Calms inflammation</li>
+                            <li>Helps to calm inflammation</li>
                             <li>Reduces acne-causing bacteria</li>
                             <li>Stimulates collagen production</li>
                             <li>Promotes overall skin healing</li>
-                            <li>Includes personalized light color for skin's needs</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="service-item">
-                    <div class="service-header">
-                        <h3>Peel to Perfection (PACKAGE)<p>~90 min</h3>
-                        <span class="service-price">$600</span>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-image-container">
-                            <img src="images/service5.jpg" alt="Peel Package" class="service-image">
-                        </div>
-                        <ul class="service-details">
-                            <li>Includes Peel to Perfection</li>
-                            <li>Plus an additional five extra peel treatments</li>
+                            <li>Customized light colors are selected based on skin's needs</li>
                         </ul>
                     </div>
                 </div>
