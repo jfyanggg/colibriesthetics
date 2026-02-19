@@ -2122,7 +2122,48 @@
                     total_duration: getTotalDuration() + ' min',
                     form_details: Object.entries(state.formData)
                         .filter(([k, v]) => v && !['firstName', 'lastName', 'email', 'phone'].includes(k))
-                        .map(([k, v]) => `${k}: ${v}`)
+                        .map(([k, v]) => {
+                            const labelMap = {
+                                dateOfBirth: "Date of Birth",
+                                emergencyContactName: "Emergency Contact",
+                                emergencyContactPhone: "Emergency Contact Phone",
+                                firstVisit: "First Visit",
+                                additionalNotes: "Additional Notes",
+                                consult_skinType: "Skin Type",
+                                consult_skinConcerns: "Skin Concerns",
+                                consult_skinConcernsOther: "Other Skin Concerns",
+                                consult_fitzpatrickScale: "Skin Description (Fitzpatrick)",
+                                consult_areasOfConcern: "Areas of Concern",
+                                consult_areasOfConcernDetails: "Areas of Concern Details",
+                                consult_cosmeticAllergies: "Allergic to Cosmetic Ingredients",
+                                consult_cosmeticAllergiesList: "Cosmetic Allergies List",
+                                consult_sensitiveSkin: "Sensitive Skin",
+                                consult_allergyReactions: "Allergic Reactions To",
+                                consult_allergyReactionsOther: "Other Allergic Reactions",
+                                consult_allergyDetails: "Allergy Details",
+                                consult_previousFacial: "Previous Facial Treatment",
+                                consult_previousPeelsLaser: "Previous Peels/Laser/Microdermabrasion",
+                                consult_retinolUse: "Uses Retinol/Retin-A Products",
+                                consult_retinolLastMonth: "Retinol Used in Last Month",
+                                consult_acneMedication: "Acne Medication",
+                                consult_acneMedDetails: "Acne Medication Details",
+                                consult_hairRemoval: "Hair Removal in Past 5 Weeks",
+                                consult_hairRemovalDetails: "Hair Removal Details",
+                                consult_botoxFillers: "Botox/Fillers in Past 5 Weeks",
+                                consult_skincareRoutine: "Skincare Routine",
+                                consult_pregnant: "Pregnant",
+                                consult_breastfeeding: "Breastfeeding",
+                                consult_oralContraceptive: "Oral Contraceptive",
+                                consult_hormoneTherapy: "Hormone Replacement Therapy",
+                                consult_skinConditions: "Diagnosed Skin Conditions",
+                                consult_medicalConditions: "Medical Conditions",
+                                consult_medicalConditionsDetails: "Medical Conditions Details",
+                                consult_anythingElse: "Additional Information"
+                            };
+                            const label = labelMap[k] || k.replace(/^consult_/, '').replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
+                            const value = Array.isArray(v) ? v.join(', ') : v;
+                            return `${label}: ${value}`;
+                        })
                         .join('\n')
                 };
 
