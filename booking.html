@@ -2160,7 +2160,14 @@
                                 consult_medicalConditionsDetails: "Medical Conditions Details",
                                 consult_anythingElse: "Additional Information"
                             };
-                            const label = labelMap[k] || k.replace(/^consult_/, '').replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
+                            const label = labelMap[k] || k
+    .replace(/^consult_/, '')
+    .replace(/_/g, ' ')
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^./, s => s.toUpperCase());
+
                             const value = Array.isArray(v) ? v.join(', ') : v;
                             return `${label}: ${value}`;
                         })
