@@ -1515,13 +1515,32 @@
     };
 
     // Initialize Firebase
+    // NOTE: Firebase config keys are intentionally public — security is enforced via
+    // Firestore Security Rules in your Firebase console, not by hiding this config.
+    // IMPORTANT: Set your Firestore rules to only allow writes with valid data shapes.
+    // Recommended rules (paste into Firebase Console → Firestore → Rules):
+    //
+    //   rules_version = '2';
+    //   service cloud.firestore {
+    //     match /databases/{database}/documents {
+    //       match /bookings/{booking} {
+    //         allow read: if false;  // nobody can read bookings from the frontend
+    //         allow create: if request.resource.data.keys().hasAll(['date','timeStart','timeEnd','clientName','clientEmail','status'])
+    //                        && request.resource.data.status == 'confirmed'
+    //                        && request.resource.data.clientEmail is string
+    //                        && request.resource.data.clientEmail.size() < 200
+    //                        && request.resource.data.clientName is string
+    //                        && request.resource.data.clientName.size() < 100;
+    //         allow update, delete: if false;  // no updates or deletes from frontend
+    //       }
+    //     }
+    //   }
     let db = null;
     function initFirebase() {
         try {
             if (CONFIG.firebase.apiKey !== "YOUR_API_KEY") {
                 firebase.initializeApp(CONFIG.firebase);
                 db = firebase.firestore();
-                console.log("Firebase connected");
             } else {
                 console.warn("Firebase not configured — running in demo mode. Bookings won't be saved.");
             }
@@ -1530,7 +1549,39 @@
         }
     }
 
+    // Simple in-memory rate limiter to prevent spam submissions
+    const submissionTracker = {
+        attempts: 0,
+        lastReset: Date.now(),
+        maxAttempts: 3,
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        isAllowed() {
+            const now = Date.now();
+            if (now - this.lastReset > this.windowMs) {
+                this.attempts = 0;
+                this.lastReset = now;
+            }
+            if (this.attempts >= this.maxAttempts) return false;
+            this.attempts++;
+            return true;
+        }
+    };
+
+    // Sanitize user input to prevent XSS
+    function sanitizeInput(str) {
+        if (typeof str !== 'string') return str;
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;');
+    }
+
     // Initialize EmailJS
+    // NOTE: EmailJS public keys are designed to be in frontend code.
+    // IMPORTANT: Whitelist your domain in EmailJS dashboard to prevent key abuse:
+    // emailjs.com → Account → Security → Allowed Origins → add your site URL
     function initEmailJS() {
         try {
             if (CONFIG.emailjs.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY") {
@@ -2049,6 +2100,12 @@
 
     // ---- CONFIRM BOOKING ----
     async function confirmBooking() {
+        // Rate limit: prevent spam submissions
+        if (!submissionTracker.isAllowed()) {
+            alert('Too many booking attempts. Please wait 15 minutes before trying again.');
+            return;
+        }
+
         const loading = document.getElementById('loadingOverlay');
         loading.classList.add('visible');
 
@@ -2063,10 +2120,12 @@
             services: services.map(s => ({ id: s.id, name: s.name, duration: s.duration, price: s.price })),
             totalDuration: getTotalDuration(),
             totalPrice: getTotalPrice(),
-            clientName: (state.formData.firstName || '') + ' ' + (state.formData.lastName || ''),
-            clientEmail: state.formData.email || '',
-            clientPhone: state.formData.phone || '',
-            formData: { ...state.formData },
+            clientName: sanitizeInput((state.formData.firstName || '') + ' ' + (state.formData.lastName || '')),
+            clientEmail: sanitizeInput(state.formData.email || ''),
+            clientPhone: sanitizeInput(state.formData.phone || ''),
+            formData: Object.fromEntries(
+                Object.entries(state.formData).map(([k, v]) => [k, Array.isArray(v) ? v : sanitizeInput(v)])
+            ),
             status: 'confirmed',
             createdAt: new Date().toISOString()
         };
