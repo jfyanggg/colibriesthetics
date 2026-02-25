@@ -1241,8 +1241,8 @@
         // ---- TIME SLOT SETTINGS ----
         slotInterval: 30,       // minutes between each bookable slot
         bufferTime: 15,         // minutes buffer between appointments
-        minAdvanceHours: 2,     // minimum hours in advance a client can book
-        maxAdvanceWeeks: 8,     // how many weeks ahead clients can book
+        minAdvanceHours: 1,     // minimum hours in advance a client can book
+        maxAdvanceWeeks: 16,     // how many weeks ahead clients can book
 
         // ---- AVAILABILITY ----
         // Set available hours for each day. Use null for closed days.
@@ -1273,30 +1273,32 @@
             {
                 id: "brow-wax",
                 name: "Brow Wax & Shape",
-                category: "Bye-Bye Hair",
-                duration: 20,
+                category: "Bye-Bye Hair - Waxing",
+                duration: 30,
                 price: 25,
-                description: "Brow wax and shape for clean, defined brows",
+                description: "Removal of unwanted hair for clean and defined brows",
                 hasConsultationForm: false,
-                formFields: []
+                formFields: [
+                    { name: "accutaneMeds", label: "Are you taking Accutane or any acne medication?", type: "pills", options: ["Yes", "No"], required: true }
+                ]
             },
             {
                 id: "upper-lip",
                 name: "Upper Lip",
-                category: "Bye-Bye Hair",
+                category: "Bye-Bye Hair - Waxing",
                 duration: 10,
                 price: 12,
-                description: "Upper lip hair removal",
+                description: "Removal of fine or coarse hair from upper lip area",
                 hasConsultationForm: false,
                 formFields: []
             },
             {
                 id: "underarm",
                 name: "Underarm",
-                category: "Bye-Bye Hair",
-                duration: 15,
+                category: "Bye-Bye Hair - Waxing",
+                duration: 20,
                 price: 18,
-                description: "Underarm hair removal",
+                description: "Removes unwanted hair from underarm area",
                 hasConsultationForm: false,
                 formFields: []
             },
@@ -1305,38 +1307,38 @@
             {
                 id: "lash-lift",
                 name: "Lash Lift",
-                category: "No-Makeup Look",
+                category: "No-Makeup Look - Lashes & Brows",
                 duration: 60,
                 price: 65,
-                description: "Enhances natural lashes with gentle lifting treatment",
+                description: "Enhance your natural lashes with a gentle lifting treatment",
                 hasConsultationForm: false,
                 formFields: []
             },
             {
                 id: "brow-lamination",
                 name: "Brow Lamination",
-                category: "No-Makeup Look",
-                duration: 45,
+                category: "No-Makeup Look - Lashes & Brows",
+                duration: 60,
                 price: 75,
-                description: "Smooths and sets brow hairs for a full, defined look",
+                description: "Smooths and sets brow hairs for fuller, lifted, and sculpted look",
                 hasConsultationForm: false,
                 formFields: []
             },
             {
                 id: "the-combo",
                 name: "The Combo (Lift & Lami)",
-                category: "No-Makeup Look",
-                duration: 90,
+                category: "No-Makeup Look - Lashes & Brows",
+                duration: 120,
                 price: 120,
-                description: "Lash lift and brow lamination together",
+                description: "Powerful combo treatment enhancing both lashes and brows",
                 hasConsultationForm: false,
                 formFields: []
             },
             {
                 id: "add-tint",
                 name: "Add Tint",
-                category: "No-Makeup Look",
-                duration: 10,
+                category: "No-Makeup Look - Lashes & Brows",
+                duration: 15,
                 price: 10,
                 description: "Add a tint to your lash lift or brow lamination",
                 hasConsultationForm: false,
@@ -1346,32 +1348,63 @@
             // ──── SKIN REJUVENATION ────
             {
                 id: "keepin-it-simple",
-                name: "Keepin' It Simple",
-                category: "Skin Rejuvenation",
+                name: "Keepin' It Simple Facial",
+                category: "Skin Rejuvenation - Corrective Facial Treatments",
                 duration: 45,
                 price: 70,
-                description: "Skin analysis, double cleanse, extractions, enzyme treatment, and high frequency",
+                description: "Skin analysis, double cleanse, enzyme exfoliation, extractions as needed, customized treatment mask, high frequency therapy, finishing serums, SPF, and personalized aftercare",
                 hasConsultationForm: false,
                 formFields: []
             },
             {
+                id: "skin-renewal",
+                name: "Skin Renewal: Needling Treatment",
+                category: "Skin Rejuvenation - Corrective Facial Treatments",
+                duration: 75,
+                price: 250,
+                description: "Collagen-stimulating nano or micro-needling treatment *Consultation Form Required*",
+                hasConsultationForm: true,
+                formFields: []
+            },
+             {
+                id: "skin-renewal",
+                name: "Package Deal: 4 Needling Treatments",
+                category: "Skin Rejuvenation - Corrective Facial Treatments",
+                duration: 75,
+                price: 925,
+                description: "4 needling treatments over 4 different sessions separated by recovery time for optimal results *Deposit & Consultation Form Required*",
+                hasConsultationForm: true,
+                formFields: []
+            },
+            // ──── PEELS ────
+            {
                 id: "peel-2-perfection",
-                name: "Peel 2 Perfection",
-                category: "Skin Rejuvenation",
+                name: "AML 20 Advanced Resurfacing Peel",
+                category: "Peel 2 Perfection - Superficial to Medium Peels",
                 duration: 75,
                 price: 170,
-                description: "Mild AML peel *tree nut allergy*, resurfacing peel. *Consultation Form Required*",
+                description: "Professional-grade triple acid peel with Azelaic, Mandelic, and Lactic Acids (20%) with post-treatment calming and barrier-supporting finishes and a customized aftercare guidance *Consultation Form Required*",
+                hasConsultationForm: true,
+                formFields: []
+            },
+              {
+                id: "peel-2-perfection",
+                name: "SRQ Green Sea Sponge Peel",
+                category: "Peel 2 Perfection - Superficial to Medium Peels",
+                duration: 75,
+                price: 170,
+                description: "Advanced Bio-Resurfacing, natural, non-acidic, liquid micro-needling treatment with professional post-care guidance *Consultation Form Required*",
                 hasConsultationForm: true,
                 formFields: []
             },
             {
-                id: "skin-renewal",
-                name: "Skin Renewal",
-                category: "Skin Rejuvenation",
+                id: "peel-2-perfection",
+                name: "Package Deal: 5 Peel Treatments",
+                category: "Peel 2 Perfection - Superficial to Medium Peels",
                 duration: 75,
-                price: 250,
-                description: "Nano/micro-needling treatment. *Consultation Form Required*",
-                hasConsultationForm: true,
+                price: 550,
+                description: "5 peel treatments over 5 different sessions separated by recovery time for optimal results *Deposit & Consultation Form Required*",
+                hasConsultationForm: false,
                 formFields: []
             },
 
@@ -1379,20 +1412,20 @@
             {
                 id: "diamond-tip-dermabrasion",
                 name: "Diamond Tip Dermabrasion",
-                category: "Add-Ons",
+                category: "Service Add-Ons",
                 duration: 20,
                 price: 45,
-                description: "Diamond tip dermabrasion for smoother, refined skin",
+                description: "Physical exfolitation to clean up dead skin and collagen stimulation for smoother, refined skin texture and tone *Only applicable to Keepin It Simple Facial*",
                 hasConsultationForm: false,
                 formFields: []
             },
             {
                 id: "led-therapy",
                 name: "LED Light Therapy",
-                category: "Add-Ons",
+                category: "Service Add-Ons",
                 duration: 20,
                 price: 15,
-                description: "Targeted light treatment to calm inflammation, reduce acne, and stimulate collagen",
+                description: "Targeted and customized light treatment to calm inflammation, reduce acne-causing bacteria, and stimulate collagen production",
                 hasConsultationForm: false,
                 formFields: []
             }
@@ -2217,7 +2250,8 @@
                                 consult_skinConditions: "Diagnosed Skin Conditions",
                                 consult_medicalConditions: "Medical Conditions",
                                 consult_medicalConditionsDetails: "Medical Conditions Details",
-                                consult_anythingElse: "Additional Information"
+                                consult_anythingElse: "Additional Information",
+                                "brow-wax_accutaneMeds": "Taking Accutane/Acne Medication"
                             };
                             const label = labelMap[k] || k
     .replace(/^consult_/, '')
