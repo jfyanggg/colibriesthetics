@@ -2212,59 +2212,76 @@
                     time: formatTime12(startMin) + ' – ' + formatTime12(startMin + getTotalDuration()),
                     total_price: '$' + getTotalPrice(),
                     total_duration: getTotalDuration() + ' min',
-                    form_details: Object.entries(state.formData)
-                        .filter(([k, v]) => v && !['firstName', 'lastName', 'email', 'phone'].includes(k))
-                        .map(([k, v]) => {
-                            const labelMap = {
-                                dateOfBirth: "Date of Birth",
-                                emergencyContactName: "Emergency Contact",
-                                emergencyContactPhone: "Emergency Contact Phone",
-                                firstVisit: "First Visit",
-                                additionalNotes: "Additional Notes",
-                                consult_skinType: "Skin Type",
-                                consult_skinConcerns: "Skin Concerns",
-                                consult_skinConcernsOther: "Other Skin Concerns",
-                                consult_fitzpatrickScale: "Skin Description (Fitzpatrick)",
-                                consult_areasOfConcern: "Areas of Concern",
-                                consult_areasOfConcernDetails: "Areas of Concern Details",
-                                consult_cosmeticAllergies: "Allergic to Cosmetic Ingredients",
-                                consult_cosmeticAllergiesList: "Cosmetic Allergies List",
-                                consult_sensitiveSkin: "Sensitive Skin",
-                                consult_allergyReactions: "Allergic Reactions To",
-                                consult_allergyReactionsOther: "Other Allergic Reactions",
-                                consult_allergyDetails: "Allergy Details",
-                                consult_previousFacial: "Previous Facial Treatment",
-                                consult_previousPeelsLaser: "Previous Peels/Laser/Microdermabrasion",
-                                consult_retinolUse: "Uses Retinol/Retin-A Products",
-                                consult_retinolLastMonth: "Retinol Used in Last Month",
-                                consult_acneMedication: "Acne Medication",
-                                consult_acneMedDetails: "Acne Medication Details",
-                                consult_hairRemoval: "Hair Removal in Past 5 Weeks",
-                                consult_hairRemovalDetails: "Hair Removal Details",
-                                consult_botoxFillers: "Botox/Fillers in Past 5 Weeks",
-                                consult_skincareRoutine: "Skincare Routine",
-                                consult_pregnant: "Pregnant",
-                                consult_breastfeeding: "Breastfeeding",
-                                consult_oralContraceptive: "Oral Contraceptive",
-                                consult_hormoneTherapy: "Hormone Replacement Therapy",
-                                consult_skinConditions: "Diagnosed Skin Conditions",
-                                consult_medicalConditions: "Medical Conditions",
-                                consult_medicalConditionsDetails: "Medical Conditions Details",
-                                consult_anythingElse: "Additional Information",
-                                "brow-wax_accutaneMeds": "Taking Accutane/Acne Medication"
-                            };
-                            const label = labelMap[k] || k
-    .replace(/^consult_/, '')
-    .replace(/_/g, ' ')
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/^./, s => s.toUpperCase());
+                    form_details: (() => {
+                        // Define the exact display order to match the form layout
+                        const orderedKeys = [
+                            // Personal Information
+                            { key: "dateOfBirth", label: "Date of Birth" },
+                            { key: "emergencyContactName", label: "Emergency Contact" },
+                            { key: "emergencyContactPhone", label: "Emergency Contact Phone" },
+                            { key: "firstVisit", label: "First Visit" },
+                            { key: "additionalNotes", label: "Additional Notes" },
+                            // Consultation Form — Skin Profile
+                            { key: "consult_skinType", label: "Skin Type" },
+                            { key: "consult_skinConcerns", label: "Skin Concerns" },
+                            { key: "consult_skinConcernsOther", label: "Other Skin Concerns" },
+                            { key: "consult_fitzpatrickScale", label: "Skin Description (Fitzpatrick)" },
+                            { key: "consult_areasOfConcern", label: "Areas of Concern" },
+                            { key: "consult_areasOfConcernDetails", label: "Areas of Concern Details" },
+                            // Allergies & Sensitivities
+                            { key: "consult_cosmeticAllergies", label: "Allergic to Cosmetic Ingredients" },
+                            { key: "consult_cosmeticAllergiesList", label: "Cosmetic Allergies List" },
+                            { key: "consult_sensitiveSkin", label: "Sensitive Skin" },
+                            { key: "consult_allergyReactions", label: "Allergic Reactions To" },
+                            { key: "consult_allergyReactionsOther", label: "Other Allergic Reactions" },
+                            { key: "consult_allergyDetails", label: "Allergy Details" },
+                            // Treatment History & Current Skincare
+                            { key: "consult_previousFacial", label: "Previous Facial Treatment" },
+                            { key: "consult_previousPeelsLaser", label: "Previous Peels/Laser/Microdermabrasion" },
+                            { key: "consult_retinolUse", label: "Uses Retinol/Retin-A Products" },
+                            { key: "consult_retinolLastMonth", label: "Retinol Used in Last Month" },
+                            { key: "consult_acneMedication", label: "Acne Medication" },
+                            { key: "consult_acneMedDetails", label: "Acne Medication Details" },
+                            { key: "consult_hairRemoval", label: "Hair Removal in Past 5 Weeks" },
+                            { key: "consult_hairRemovalDetails", label: "Hair Removal Details" },
+                            { key: "consult_botoxFillers", label: "Botox/Fillers in Past 5 Weeks" },
+                            { key: "consult_skincareRoutine", label: "Skincare Routine" },
+                            // Health & Wellness
+                            { key: "consult_pregnant", label: "Pregnant" },
+                            { key: "consult_breastfeeding", label: "Breastfeeding" },
+                            { key: "consult_oralContraceptive", label: "Oral Contraceptive" },
+                            { key: "consult_hormoneTherapy", label: "Hormone Replacement Therapy" },
+                            { key: "consult_skinConditions", label: "Diagnosed Skin Conditions" },
+                            { key: "consult_medicalConditions", label: "Medical Conditions" },
+                            { key: "consult_medicalConditionsDetails", label: "Medical Conditions Details" },
+                            { key: "consult_anythingElse", label: "Additional Information" },
+                            // Service-specific fields
+                            { key: "brow-wax_accutaneMeds", label: "Taking Accutane/Acne Medication" }
+                        ];
 
-                            const value = Array.isArray(v) ? v.join(', ') : v;
-                            return `${label}: ${value}`;
-                        })
-                        .join('\n')
+                        const skipKeys = ['firstName', 'lastName', 'email', 'phone'];
+
+                        // First: ordered keys that have values
+                        const lines = orderedKeys
+                            .filter(({ key }) => state.formData[key] && !skipKeys.includes(key))
+                            .map(({ key, label }) => {
+                                const v = state.formData[key];
+                                const value = Array.isArray(v) ? v.join(', ') : v;
+                                return `${label}: ${value}`;
+                            });
+
+                        // Then: any remaining keys not in the ordered list (future-proofing)
+                        const orderedKeySet = new Set(orderedKeys.map(o => o.key).concat(skipKeys));
+                        Object.entries(state.formData)
+                            .filter(([k, v]) => v && !orderedKeySet.has(k))
+                            .forEach(([k, v]) => {
+                                const label = k.replace(/^consult_/, '').replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').replace(/\s+/g, ' ').trim().replace(/^./, s => s.toUpperCase());
+                                const value = Array.isArray(v) ? v.join(', ') : v;
+                                lines.push(`${label}: ${value}`);
+                            });
+
+                        return lines.join('\n');
+                    })()
                 };
 
                 await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, emailParams);
