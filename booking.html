@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colibrí Esthetic - Book</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1058,6 +1058,7 @@
             <nav class="top-nav">
                 <a href="about.html" class="top-link">About Me</a>
                 <a href="services.html" class="top-link">Services</a>
+                <a href="gifts.html" class="top-link">Gifts</a>
             </nav>
         </div>
     </div>
@@ -2230,12 +2231,8 @@
                     form_details: (() => {
                         // Define the exact display order to match the form layout
                         const orderedKeys = [
-                            // Personal Information
+                            // Personal Information (firstName/lastName/email/phone are skipped below)
                             { key: "dateOfBirth", label: "Date of Birth" },
-                            { key: "emergencyContactName", label: "Emergency Contact" },
-                            { key: "emergencyContactPhone", label: "Emergency Contact Phone" },
-                            { key: "firstVisit", label: "First Visit" },
-                            { key: "additionalNotes", label: "Additional Notes" },
                             // Consultation Form — Skin Profile
                             { key: "consult_skinType", label: "Skin Type" },
                             { key: "consult_skinConcerns", label: "Skin Concerns" },
@@ -2271,7 +2268,8 @@
                             { key: "consult_medicalConditionsDetails", label: "Medical Conditions Details" },
                             { key: "consult_anythingElse", label: "Additional Information" },
                             // Service-specific fields
-                            { key: "brow-wax_accutaneMeds", label: "Taking Accutane/Acne Medication" }
+                            { key: "brow-wax_accutaneMeds", label: "Taking Accutane/Acne Medication (Brow Wax)" },
+                            { key: "brow-lami-shape_accutaneMeds", label: "Taking Accutane/Acne Medication (Brow Lami + Shape)" }
                         ];
 
                         const skipKeys = ['firstName', 'lastName', 'email', 'phone'];

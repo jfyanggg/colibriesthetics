@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colibrí Esthetic - Gifts</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <style>
+        /* ============================================
+           GIFT CHECKOUT STYLES
+           Matches the booking page aesthetic exactly:
+           - Background: #fafafa
+           - Headings: Cormorant Garamond, #2c2c2c
+           - Body: Montserrat 300, #666
+           - Borders: #e0e0e0
+           - Buttons: #2c2c2c bg, white text
+           ============================================ */
+
+        /* Progress Steps */
+        .gift-progress {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-step .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #e0e0e0;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 300;
+            color: #ccc;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .progress-step.active .step-number {
+            border-color: #2c2c2c;
+            color: #2c2c2c;
+            font-weight: 400;
+        }
+
+        .progress-step.completed .step-number {
+            background: #2c2c2c;
+            border-color: #2c2c2c;
+            color: white;
+        }
+
+        .progress-step .step-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 300;
+            color: #ccc;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 8px;
+            transition: color 0.4s ease;
+        }
+
+        .progress-step.active .step-label,
+        .progress-step.completed .step-label {
+            color: #2c2c2c;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 18px;
+            left: 16.66%;
+            right: 16.66%;
+            height: 1px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: #2c2c2c;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        /* Step Containers */
+        .gift-step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .gift-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .step-subtitle {
+            font-size: 0.9rem;
+            color: #999;
+            font-weight: 300;
+            margin-bottom: 35px;
+        }
+
+        /* ---- Centered step 1 header ---- */
+        .step-title-centered {
+            text-align: center;
+        }
+
+        .step-subtitle-centered {
+            text-align: center;
+        }
+
+        /* ---- Arched Mother's Day script ---- */
+        .mothers-day-arch {
+            display: block;
+            margin: 0 auto 6px;
+            overflow: visible;
+        }
+
+        .mothers-day-arch text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 52px;
+            fill: #ff8daf;
+            letter-spacing: 2px;
+        }
+
+        /* ---- Intro on step 1 ---- */
+        .step1-intro {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            font-size: 1rem;
+            color: #4a4a4a;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        /* ---- Two-card pair layout (overrides .gift-grid auto-fit) ---- */
+        .gift-grid-pair {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            max-width: 560px;
+            margin-left: auto;
+            margin-right: auto;
+            gap: 30px;
+        }
+
+        .gift-grid-pair .gift-card {
+            min-height: 260px;
+            padding: 45px 30px;
+        }
+
+        .gift-grid-pair .gift-card-amount {
+            font-size: 3.2rem;
+        }
+
+        @media (max-width: 560px) {
+            .gift-grid-pair {
+                grid-template-columns: 1fr;
+                max-width: 360px;
+                gap: 20px;
+            }
+
+            .gift-grid-pair .gift-card {
+                min-height: 220px;
+                padding: 35px 25px;
+            }
+
+            .gift-grid-pair .gift-card-amount {
+                font-size: 2.8rem;
+            }
+        }
+
+        /* ---- Form fields (matches booking page) ---- */
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .form-section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: #999;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .form-group label .required {
+            color: #c0392b;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 0;
+            border: none;
+            border-bottom: 1px solid #e0e0e0;
+            background: transparent;
+            font-size: 0.95rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            color: #2c2c2c;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-bottom-color: #2c2c2c;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .form-help {
+            font-size: 0.78rem;
+            color: #999;
+            font-weight: 300;
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+
+        /* Option pills (Yes/No for "send directly to recipient") */
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .option-pill {
+            padding: 8px 18px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .option-pill:hover {
+            border-color: #999;
+        }
+
+        .option-pill.selected {
+            background: #2c2c2c;
+            border-color: #2c2c2c;
+            color: white;
+        }
+
+        /* ---- Review section ---- */
+        .review-section {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .review-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .review-section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #2c2c2c;
+            margin-bottom: 15px;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+        }
+
+        .review-label {
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 300;
+        }
+
+        .review-value {
+            font-size: 0.9rem;
+            color: #2c2c2c;
+            font-weight: 300;
+            text-align: right;
+        }
+
+        .review-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-top: 12px;
+            margin-top: 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .review-total-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: #2c2c2c;
+        }
+
+        .review-total-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            color: #2c2c2c;
+        }
+
+        /* Navigation Buttons */
+        .gift-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-back {
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            color: #999;
+            font-weight: 300;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            transition: color 0.3s ease;
+            padding: 12px 0;
+        }
+
+        .btn-back:hover {
+            color: #2c2c2c;
+        }
+
+        .btn-next {
+            display: inline-block;
+            padding: 14px 45px;
+            background-color: #2c2c2c;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-next:hover {
+            background-color: #4a4a4a;
+        }
+
+        .btn-next:disabled {
+            background-color: #ddd;
+            cursor: default;
+        }
+
+        /* Sticky cart summary (shows selected gift card) */
+        .cart-summary {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .cart-summary.visible {
+            transform: translateY(0);
+        }
+
+        .cart-details {
+            display: flex;
+            gap: 25px;
+        }
+
+        .cart-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-label {
+            font-size: 0.7rem;
+            color: #999;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .cart-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            color: #2c2c2c;
+            font-weight: 400;
+        }
+
+        /* Confirmation Screen */
+        .confirmation-screen {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .confirmation-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 25px;
+            border: 2px solid #2c2c2c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirmation-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #2c2c2c;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .confirmation-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 300;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-message {
+            font-size: 0.95rem;
+            color: #999;
+            font-weight: 300;
+            line-height: 1.7;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Loading spinner */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(250, 250, 250, 0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.visible {
+            display: flex;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #e0e0e0;
+            border-top: 2px solid #2c2c2c;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 300;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .progress-step .step-label {
+                font-size: 0.6rem;
+                letter-spacing: 0.5px;
+            }
+
+            .progress-step .step-number {
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
+            }
+
+            .progress-line {
+                top: 15px;
+            }
+
+            .gift-progress {
+                margin-bottom: 35px;
+            }
+
+            .step-title {
+                font-size: 1.4rem;
+            }
+
+            .step-subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 25px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .form-section-title {
+                font-size: 1.1rem;
+            }
+
+            .form-group label {
+                font-size: 0.75rem;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                font-size: 16px; /* prevents iOS zoom on focus */
+                padding: 10px 0;
+            }
+
+            .option-group {
+                gap: 8px;
+            }
+
+            .option-pill {
+                padding: 7px 14px;
+                font-size: 0.8rem;
+            }
+
+            .cart-summary {
+                padding: 14px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .cart-details {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .cart-value {
+                font-size: 1.1rem;
+            }
+
+            .cart-label {
+                font-size: 0.65rem;
+            }
+
+            .gift-nav {
+                flex-direction: column-reverse;
+                gap: 12px;
+                margin-top: 30px;
+                padding-top: 20px;
+            }
+
+            .btn-next {
+                width: 100%;
+                text-align: center;
+                padding: 14px 30px;
+            }
+
+            .btn-back {
+                padding: 8px 0;
+            }
+
+            .review-item {
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .review-value {
+                text-align: left;
+            }
+
+            .review-total-value {
+                font-size: 1.1rem;
+            }
+
+            .confirmation-screen {
+                padding: 40px 0;
+            }
+
+            .confirmation-title {
+                font-size: 1.6rem;
+            }
+
+            .confirmation-message {
+                font-size: 0.85rem;
+            }
+
+            .minimal-main {
+                padding-bottom: 140px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .progress-step .step-label {
+                font-size: 0.55rem;
+            }
+
+            .progress-step .step-number {
+                width: 26px;
+                height: 26px;
+                font-size: 0.7rem;
+            }
+
+            .option-pill {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <a href="index.html" class="back-link">← Home</a>
+            <div class="top-bar-brand">
+                <img src="images/hummingbird.png" alt="Colibrí Esthetic" class="top-bar-logo">
+                <h2 class="top-bar-name">Colibrí Esthetic</h2>
+            </div>
+            <nav class="top-nav">
+                <a href="about.html" class="top-link">About Me</a>
+                <a href="services.html" class="top-link">Services</a>
+                <a href="booking.html" class="top-link">Book</a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="minimal-main">
+        <section class="minimal-section">
+            <h1 class="page-title">Gifts</h1>
+
+            <!-- Progress Bar -->
+            <div class="gift-progress">
+                <div class="progress-line">
+                    <div class="progress-line-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Choose</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Details</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Review</div>
+                </div>
+            </div>
+
+            <!-- STEP 1: Choose Gift Card -->
+            <div class="gift-step active" id="step1">
+
+                <!-- Arched "Mother's Day" in cursive -->
+                <svg class="mothers-day-arch" style="margin-bottom: -45px;" viewBox="0 0 420 110" width="420" height="110" xmlns="http://www.w3.org/2000/svg" aria-label="Mother's Day">
+                    <defs>
+                        <!-- A gentle upward arc: starts bottom-left, peaks in the center, ends bottom-right -->
+                        <path id="archPath" d="M 30,95 Q 210,5 390,95" fill="none"/>
+                    </defs>
+                    <text>
+                        <textPath href="#archPath" startOffset="50%" text-anchor="middle">Mother's Day</textPath>
+                    </text>
+                </svg>
+
+                <p style="text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 400; color: #ff8daf; letter-spacing: 2px; margin: 0 0 6px;">Gift Cards</p>
+                <p style="text-align: center; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 400; color: #999; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 35px;">Limited Time Offer!</p>
+                
+                <div class="gift-grid gift-grid-pair">
+                    <div class="gift-card" data-amount="50">
+                        <div>
+                            <div class="gift-card-amount">$50</div>
+                            <div class="gift-card-label">$60 value!</div>
+                        </div>
+                        <p class="gift-card-description">Purchase a $50 gift card and receive $10 more!</p>
+                    </div>
+
+                    <div class="gift-card" data-amount="100">
+                        <div>
+                            <div class="gift-card-amount">$100</div>
+                            <div class="gift-card-label">$120 value!</div>
+                        </div>
+                        <p class="gift-card-description">Purchase a $100 gift card and receive $20 more!</p>
+                    </div>
+                </div>
+
+                <div class="gift-nav">
+                    <div></div>
+                    <button class="btn-next" id="toStep2" disabled>Continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Details Form -->
+            <div class="gift-step" id="step2">
+                <h2 class="step-title">Gift Details</h2>
+                <p class="step-subtitle">Tell us about you and the recipient</p>
+
+                <form id="giftForm" novalidate>
+                    <!-- Your info -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Your Information</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="senderFirstName">First Name <span class="required">*</span></label>
+                                <input type="text" id="senderFirstName" name="senderFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="senderLastName">Last Name <span class="required">*</span></label>
+                                <input type="text" id="senderLastName" name="senderLastName" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="senderEmail">Email <span class="required">*</span></label>
+                                <input type="email" id="senderEmail" name="senderEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="senderPhone">Phone</label>
+                                <input type="tel" id="senderPhone" name="senderPhone">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recipient info -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Recipient</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="recipientFirstName">Recipient First Name <span class="required">*</span></label>
+                                <input type="text" id="recipientFirstName" name="recipientFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="recipientLastName">Recipient Last Name</label>
+                                <input type="text" id="recipientLastName" name="recipientLastName">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Include complimentary mini dried bouquet for in-studio pickup? <span class="required">*</span></label>
+                            <p class="form-help">*While supplies last*</p>
+                            <div class="option-group" id="bouquetOptions">
+                                <div class="option-pill" data-value="yes">Yes</div>
+                                <div class="option-pill" data-value="no">No</div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="form-group">
+                            <label>Digital or Physical Gift Card? <span class="required">*</span></label>
+                            <div class="option-group" id="deliveryOptions">
+                                <div class="option-pill" data-value="me">Digital</div>
+                                <div class="option-pill" data-value="recipient">Physical</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+
+                <div class="gift-nav">
+                    <button class="btn-back" id="backTo1">← Back to gift cards</button>
+                    <button class="btn-next" id="toStep3">Continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Review & Confirm -->
+            <div class="gift-step" id="step3">
+                <h2 class="step-title">Review & Confirm</h2>
+                <p class="step-subtitle">Please review your gift details before submitting</p>
+
+                <div id="reviewContent"></div>
+
+                <p class="form-help" style="margin-top: 25px;">
+                    After you submit, Valerie will reach out by email to arrange payment and finalize delivery of the gift card.
+                </p>
+
+                <div class="gift-nav">
+                    <button class="btn-back" id="backTo2">← Back to details</button>
+                    <button class="btn-next" id="confirmGift">Submit Gift Order</button>
+                </div>
+            </div>
+
+            <!-- Confirmation Screen -->
+            <div class="gift-step" id="stepConfirm">
+                <div class="confirmation-screen">
+                    <div class="confirmation-icon">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <h2 class="confirmation-title">Gift Order Received</h2>
+                    <p class="confirmation-message">
+                        Thank you! A confirmation has been sent to your email.
+                        Valerie will be in touch shortly to arrange payment and finalize the gift card.
+                    </p>
+                    <div style="margin-top: 40px;">
+                        <a href="index.html" class="cta-button">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Cart Summary (shows selected gift card) -->
+    <div class="cart-summary" id="cartSummary">
+        <div class="cart-details">
+            <div class="cart-detail">
+                <span class="cart-label">Gift Card</span>
+                <span class="cart-value" id="cartLabel">—</span>
+            </div>
+            <div class="cart-detail">
+                <span class="cart-label">Total</span>
+                <span class="cart-value" id="cartTotal">$0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Submitting your gift order…</div>
+    </div>
+
+    <script>
+    /* ==========================================================
+       GIFT CHECKOUT — CONFIGURATION
+       Uses the same EmailJS account as booking.html.
+       If you'd like a separate template for gift orders,
+       create one in EmailJS and replace `templateId` below.
+       ========================================================== */
+
+    const CONFIG = {
+        businessName: "Colibrí Esthetic",
+        businessEmail: "val.mcaballero@gmail.com",
+
+        emailjs: {
+            publicKey: "hxW0sqvyTRS53x7Ae",
+            serviceId: "service_8ieevij",
+            templateId: "template_hlzctm3",       // notification to Valerie
+            autoReplyTemplateId: "template_v5lztaf" // confirmation to client
+        },
+
+        // Pre-defined card tiers (must match the data-amount values in HTML)
+        tiers: {
+            50:  "Sweet",
+            100: "Radiant"
+        }
+    };
+
+    // ---- STATE ----
+    const state = {
+        currentStep: 1,
+        selectedAmount: null,   // number
+        selectedLabel: null,    // string ("Sweet" or "Radiant")
+        formData: {},
+        deliveryChoice: null,   // "me" | "recipient"
+        bouquetChoice: null     // "yes" | "no"
+    };
+
+    // ---- INIT EmailJS ----
+    function initEmailJS() {
+        if (typeof emailjs !== 'undefined' && CONFIG.emailjs.publicKey) {
+            emailjs.init(CONFIG.emailjs.publicKey);
+        }
+    }
+
+    // ---- HELPERS ----
+    function sanitizeInput(s) {
+        if (typeof s !== 'string') return s;
+        return s.trim().replace(/[<>]/g, '');
+    }
+
+    function isValidEmail(e) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+    }
+
+    // Simple rate limiter (matches booking.html pattern)
+    const submissionTracker = {
+        key: 'giftSubmissions',
+        maxSubmissions: 3,
+        windowMs: 15 * 60 * 1000,
+        isAllowed() {
+            try {
+                const now = Date.now();
+                const stored = JSON.parse(localStorage.getItem(this.key) || '[]');
+                const recent = stored.filter(t => now - t < this.windowMs);
+                if (recent.length >= this.maxSubmissions) return false;
+                recent.push(now);
+                localStorage.setItem(this.key, JSON.stringify(recent));
+                return true;
+            } catch {
+                return true; // fail open if storage unavailable
+            }
+        }
+    };
+
+    // ---- STEP 1: GIFT CARD SELECTION ----
+    function setupCardSelection() {
+        const cards = document.querySelectorAll('.gift-card');
+        const continueBtn = document.getElementById('toStep2');
+
+        cards.forEach(card => {
+            card.addEventListener('click', function () {
+                cards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+
+                const amount = Number(this.dataset.amount);
+                const label = CONFIG.tiers[amount] || 'Gift Card';
+
+                state.selectedAmount = amount;
+                state.selectedLabel = label;
+                updateCart();
+                continueBtn.disabled = !(amount && amount > 0);
+            });
+        });
+    }
+
+    function updateCart() {
+        const cart = document.getElementById('cartSummary');
+        const cartLabel = document.getElementById('cartLabel');
+        const cartTotal = document.getElementById('cartTotal');
+
+        if (state.selectedAmount && state.selectedAmount > 0) {
+            cartLabel.textContent = state.selectedLabel || '—';
+            cartTotal.textContent = '$' + state.selectedAmount;
+            // Only show on step 1 (matches booking pattern)
+            if (state.currentStep === 1) {
+                cart.classList.add('visible');
+            }
+        } else {
+            cart.classList.remove('visible');
+        }
+    }
+
+    // ---- STEP 2: FORM ----
+    function setupForm() {
+        // Delivery option pills (Digital vs Physical — both handled by Valerie via sender email)
+        const deliveryGroup = document.getElementById('deliveryOptions');
+        const pills = deliveryGroup.querySelectorAll('.option-pill');
+        pills.forEach(pill => {
+            pill.addEventListener('click', function () {
+                pills.forEach(p => p.classList.remove('selected'));
+                this.classList.add('selected');
+                state.deliveryChoice = this.dataset.value;
+                deliveryGroup.style.outline = 'none';
+            });
+        });
+
+        // Bouquet option pills
+        const bouquetGroup = document.getElementById('bouquetOptions');
+        const bouquetPills = bouquetGroup.querySelectorAll('.option-pill');
+        bouquetPills.forEach(pill => {
+            pill.addEventListener('click', function () {
+                bouquetPills.forEach(p => p.classList.remove('selected'));
+                this.classList.add('selected');
+                state.bouquetChoice = this.dataset.value;
+                bouquetGroup.style.outline = 'none';
+            });
+        });
+    }
+
+    function clearFieldError(input) {
+        input.style.borderBottomColor = '';
+    }
+
+    function markFieldError(input) {
+        input.style.borderBottomColor = '#c0392b';
+    }
+
+    function validateForm() {
+        const form = document.getElementById('giftForm');
+        let firstInvalid = null;
+        let isValid = true;
+
+        // Required text fields
+        const required = [
+            'senderFirstName', 'senderLastName', 'senderEmail',
+            'recipientFirstName'
+        ];
+
+        required.forEach(id => {
+            const el = document.getElementById(id);
+            clearFieldError(el);
+            if (!el.value.trim()) {
+                markFieldError(el);
+                isValid = false;
+                if (!firstInvalid) firstInvalid = el;
+            }
+        });
+
+        // Email format
+        const emailEl = document.getElementById('senderEmail');
+        if (emailEl.value.trim() && !isValidEmail(emailEl.value.trim())) {
+            markFieldError(emailEl);
+            isValid = false;
+            if (!firstInvalid) firstInvalid = emailEl;
+        }
+
+        // Delivery choice required
+        if (!state.deliveryChoice) {
+            isValid = false;
+            const pills = document.getElementById('deliveryOptions');
+            pills.style.outline = '1px solid #c0392b';
+            pills.style.outlineOffset = '5px';
+            pills.style.borderRadius = '3px';
+        } else {
+            document.getElementById('deliveryOptions').style.outline = 'none';
+        }
+
+        // Bouquet choice required
+        if (!state.bouquetChoice) {
+            isValid = false;
+            const bPills = document.getElementById('bouquetOptions');
+            bPills.style.outline = '1px solid #c0392b';
+            bPills.style.outlineOffset = '5px';
+            bPills.style.borderRadius = '3px';
+        } else {
+            document.getElementById('bouquetOptions').style.outline = 'none';
+        }
+
+        if (!isValid) {
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.focus({ preventScroll: true });
+            } else {
+                // No text-field errors, but a pill group is unselected — scroll to it
+                const pillError = document.querySelector('[id$="Options"][style*="c0392b"]');
+                if (pillError) pillError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return false;
+        }
+
+        // Save form data
+        state.formData = {
+            senderFirstName: sanitizeInput(document.getElementById('senderFirstName').value),
+            senderLastName:  sanitizeInput(document.getElementById('senderLastName').value),
+            senderEmail:     sanitizeInput(document.getElementById('senderEmail').value),
+            senderPhone:     sanitizeInput(document.getElementById('senderPhone').value),
+            recipientFirstName: sanitizeInput(document.getElementById('recipientFirstName').value),
+            recipientLastName:  sanitizeInput(document.getElementById('recipientLastName').value),
+            deliveryChoice:  state.deliveryChoice,
+            bouquetChoice:   state.bouquetChoice
+        };
+
+        return true;
+    }
+
+    // ---- STEP 3: REVIEW ----
+    function renderReview() {
+        const f = state.formData;
+        const recipientName = (f.recipientFirstName + ' ' + (f.recipientLastName || '')).trim();
+        const senderName = (f.senderFirstName + ' ' + f.senderLastName).trim();
+
+        const deliveryText = f.deliveryChoice === 'recipient' ? 'Physical' : 'Digital';
+
+        let html = '';
+
+        // Gift card section
+        html += '<div class="review-section">';
+        html += '<h3 class="review-section-title">Gift Card</h3>';
+        html += '<div class="review-item"><span class="review-label">Selection</span><span class="review-value">' + (state.selectedLabel || 'Custom') + '</span></div>';
+        html += '<div class="review-item"><span class="review-label">Format</span><span class="review-value">' + deliveryText + '</span></div>';
+        html += '<div class="review-item"><span class="review-label">Bouquet Pickup</span><span class="review-value">' + (f.bouquetChoice === 'yes' ? 'Yes' : 'No') + '</span></div>';
+        html += '<div class="review-total"><span class="review-total-label">Total</span><span class="review-total-value">$' + state.selectedAmount + '</span></div>';
+        html += '</div>';
+
+        // From section
+        html += '<div class="review-section">';
+        html += '<h3 class="review-section-title">From</h3>';
+        html += '<div class="review-item"><span class="review-label">Name</span><span class="review-value">' + senderName + '</span></div>';
+        html += '<div class="review-item"><span class="review-label">Email</span><span class="review-value">' + f.senderEmail + '</span></div>';
+        if (f.senderPhone) {
+            html += '<div class="review-item"><span class="review-label">Phone</span><span class="review-value">' + f.senderPhone + '</span></div>';
+        }
+        html += '</div>';
+
+        // To section
+        html += '<div class="review-section">';
+        html += '<h3 class="review-section-title">To</h3>';
+        html += '<div class="review-item"><span class="review-label">Recipient</span><span class="review-value">' + recipientName + '</span></div>';
+        html += '</div>';
+
+        document.getElementById('reviewContent').innerHTML = html;
+    }
+
+    // ---- SUBMIT ----
+    async function submitGift() {
+        if (!submissionTracker.isAllowed()) {
+            alert('Too many submissions. Please wait 15 minutes before trying again.');
+            return;
+        }
+
+        const loading = document.getElementById('loadingOverlay');
+        loading.classList.add('visible');
+
+        const f = state.formData;
+        const recipientName = (f.recipientFirstName + ' ' + (f.recipientLastName || '')).trim();
+        const senderName = (f.senderFirstName + ' ' + f.senderLastName).trim();
+
+        // Build a friendly summary for the email body
+        const detailLines = [
+            'Gift Card: ' + (state.selectedLabel || 'Custom') + ' — $' + state.selectedAmount,
+            'Format: ' + (f.deliveryChoice === 'recipient' ? 'Physical' : 'Digital'),
+            'Bouquet Pickup: ' + (f.bouquetChoice === 'yes' ? 'Yes' : 'No'),
+            '',
+            'From: ' + senderName,
+            'Sender Email: ' + f.senderEmail,
+            f.senderPhone ? 'Sender Phone: ' + f.senderPhone : null,
+            '',
+            'To: ' + recipientName
+        ].filter(Boolean).join('\n');
+
+        // Send via EmailJS using the existing booking template format
+        if (CONFIG.emailjs.publicKey && CONFIG.emailjs.publicKey !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+            try {
+                const emailParams = {
+                    // Match the booking template variables so the same templates can be reused
+                    client_name: senderName,
+                    client_email: f.senderEmail,
+                    client_phone: f.senderPhone || '',
+                    services: 'Gift Card — ' + (state.selectedLabel || 'Custom') + ' ($' + state.selectedAmount + ')',
+                    date: 'Gift Order',
+                    time: '—',
+                    total_price: '$' + state.selectedAmount,
+                    total_duration: '—',
+                    form_details: detailLines,
+                    // Extra gift-specific fields (for a custom template if you build one)
+                    gift_amount: '$' + state.selectedAmount,
+                    gift_tier: state.selectedLabel || 'Custom',
+                    recipient_name: recipientName,
+                    delivery_choice: f.deliveryChoice,
+                    bouquet_choice: f.bouquetChoice || ''
+                };
+
+                // Notification to Valerie
+                await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, emailParams);
+                console.log('Gift notification email sent to Valerie');
+
+                // Confirmation to client
+                await emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.autoReplyTemplateId, emailParams);
+                console.log('Confirmation email sent to client');
+            } catch (e) {
+                console.warn('Email error:', e);
+                loading.classList.remove('visible');
+                alert("Sorry — we couldn't submit your order automatically. Please email val.mcaballero@gmail.com directly and Valerie will help you.");
+                return;
+            }
+        }
+
+        loading.classList.remove('visible');
+        goToStep(99); // confirmation
+    }
+
+    // ---- NAVIGATION ----
+    function goToStep(step) {
+        state.currentStep = step;
+
+        // Hide all steps
+        document.querySelectorAll('.gift-step').forEach(el => el.classList.remove('active'));
+
+        if (step <= 3) {
+            document.getElementById('step' + step).classList.add('active');
+        } else {
+            document.getElementById('stepConfirm').classList.add('active');
+        }
+
+        // Update progress bar
+        document.querySelectorAll('.progress-step').forEach(el => {
+            const s = parseInt(el.dataset.step);
+            el.classList.remove('active', 'completed');
+            if (s === step && step <= 3) el.classList.add('active');
+            if (s < step) el.classList.add('completed');
+        });
+
+        // Progress line fill (3 steps total → 0%, 50%, 100%)
+        const fill = document.getElementById('progressFill');
+        const clamped = Math.min(step, 3);
+        fill.style.width = ((clamped - 1) / 2 * 100) + '%';
+
+        // Cart visibility (only on step 1, like booking)
+        const cart = document.getElementById('cartSummary');
+        if (step === 1 && state.selectedAmount > 0) {
+            cart.classList.add('visible');
+        } else {
+            cart.classList.remove('visible');
+        }
+
+        // Step-specific setup
+        if (step === 3) renderReview();
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---- EVENT LISTENERS ----
+    document.addEventListener('DOMContentLoaded', function () {
+        initEmailJS();
+        setupCardSelection();
+        setupForm();
+
+        document.getElementById('toStep2').addEventListener('click', () => {
+            if (state.selectedAmount && state.selectedAmount > 0) goToStep(2);
+        });
+        document.getElementById('toStep3').addEventListener('click', () => {
+            if (validateForm()) goToStep(3);
+        });
+        document.getElementById('backTo1').addEventListener('click', () => goToStep(1));
+        document.getElementById('backTo2').addEventListener('click', () => goToStep(2));
+        document.getElementById('confirmGift').addEventListener('click', submitGift);
+    });
+    </script>
+</body>
+</html>

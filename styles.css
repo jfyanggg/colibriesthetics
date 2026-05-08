@@ -1,4 +1,15 @@
-/* Reset and Base Styles */
+/* ============================================
+   Colibrí Esthetic - Stylesheet
+   Palette:
+   - Background:  #fafafa
+   - Text:        #2c2c2c
+   - Muted:       #666 / #999
+   - Borders:     #e0e0e0
+   - Fonts:       Cormorant Garamond (headings),
+                  Montserrat (body)
+   ============================================ */
+
+/* ── Reset & Base ───────────────────────────── */
 * {
     margin: 0;
     padding: 0;
@@ -10,9 +21,10 @@ body {
     line-height: 1.6;
     color: #2c2c2c;
     background-color: #fafafa;
+    padding-top: 20px;
 }
 
-/* Top Bar */
+/* ── Top Bar (shared on About / Services / Gifts / Booking) ── */
 .top-bar {
     background-color: #fafafa;
     padding: 15px 40px;
@@ -60,12 +72,31 @@ body {
     gap: 30px;
 }
 
-/* Adjust body to account for fixed top bar */
-body {
-    padding-top: 20px;
+.top-link {
+    font-size: 0.95rem;
+    color: #2c2c2c;
+    text-decoration: none;
+    font-weight: 300;
+    transition: color 0.3s ease;
 }
 
-/* Landing Page */
+.top-link:hover {
+    color: #666;
+}
+
+.back-link {
+    font-size: 0.95rem;
+    color: #666;
+    text-decoration: none;
+    font-weight: 300;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: #2c2c2c;
+}
+
+/* ── Landing Page ──────────────────────────── */
 .landing-container {
     height: 80vh;
     display: flex;
@@ -93,7 +124,7 @@ body {
     font-size: 4rem;
     font-weight: 300;
     color: #2c2c2c;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     letter-spacing: 5px;
 }
 
@@ -142,45 +173,7 @@ body {
     width: 100%;
 }
 
-/* Page Header */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 30px 50px;
-    background-color: #fafafa;
-}
-
-.back-link {
-    font-size: 0.95rem;
-    color: #666;
-    text-decoration: none;
-    font-weight: 300;
-    transition: color 0.3s ease;
-}
-
-.back-link:hover {
-    color: #2c2c2c;
-}
-
-.top-nav {
-    display: flex;
-    gap: 30px;
-}
-
-.top-link {
-    font-size: 0.95rem;
-    color: #2c2c2c;
-    text-decoration: none;
-    font-weight: 300;
-    transition: color 0.3s ease;
-}
-
-.top-link:hover {
-    color: #666;
-}
-
-/* Main Content */
+/* ── Main Content Container ───────────────── */
 .minimal-main {
     max-width: 800px;
     margin: 0 auto;
@@ -211,19 +204,24 @@ body {
     letter-spacing: 1px;
 }
 
-/* About Page */
-.content-block {
-    margin-bottom: 60px;
-}
-
-.content-block p {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    color: #4a4a4a;
-    margin-bottom: 20px;
+/* ── Shared Section Heading (Services / Gifts) ── */
+.service-category-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
     font-weight: 300;
+    color: #2c2c2c;
+    letter-spacing: 2px;
+    margin-top: 50px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2c2c2c;
 }
 
+.service-category-heading:first-of-type {
+    margin-top: 0;
+}
+
+/* ── About Page ───────────────────────────── */
 .about-with-image {
     display: flex;
     gap: 40px;
@@ -283,7 +281,7 @@ body {
     line-height: 1.6;
 }
 
-/* Services Page */
+/* ── Services Page ────────────────────────── */
 .service-list {
     margin-bottom: 60px;
 }
@@ -366,6 +364,21 @@ body {
     color: #2c2c2c;
 }
 
+.service-add-on {
+    font-size: 0.95rem;
+    color: #666;
+    font-weight: 300;
+    padding: 10px 0 0;
+    margin-top: 10px;
+    border-top: 1px dashed #e0e0e0;
+}
+
+.service-add-on strong {
+    color: #2c2c2c;
+    font-weight: 400;
+}
+
+/* ── CTA Button (shared) ──────────────────── */
 .cta-minimal {
     text-align: center;
     margin-top: 60px;
@@ -389,124 +402,121 @@ body {
     background-color: #4a4a4a;
 }
 
-/* Booking Page */
-.minimal-form {
-    max-width: 500px;
-    margin: 0 auto 60px;
+/* ── Gifts Page ───────────────────────────── */
+.gift-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+    margin-top: 30px;
 }
 
-.minimal-form input,
-.minimal-form select,
-.minimal-form textarea {
-    width: 100%;
-    padding: 15px 0;
-    margin-bottom: 20px;
-    border: none;
-    border-bottom: 1px solid #e0e0e0;
-    background: transparent;
-    font-size: 0.95rem;
-    font-family: 'Montserrat', sans-serif;
+.gift-card {
+    border: 1px solid #e0e0e0;
+    padding: 35px 25px;
+    text-align: center;
+    background: #fff;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 240px;
+}
+
+.gift-card:hover {
+    border-color: #2c2c2c;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.gift-card.selected {
+    border-color: #2c2c2c;
+    background: #fafafa;
+}
+
+.gift-card-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem;
     font-weight: 300;
     color: #2c2c2c;
-    transition: border-color 0.3s ease;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    line-height: 1;
 }
 
-.minimal-form input:focus,
-.minimal-form select:focus,
-.minimal-form textarea:focus {
-    outline: none;
-    border-bottom-color: #2c2c2c;
+.gift-card-label {
+    font-size: 0.75rem;
+    color: #999;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
 }
 
-.minimal-form textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-.minimal-form select {
-    cursor: pointer;
-}
-
-.minimal-form button {
-    width: 100%;
-    margin-top: 20px;
-}
-
-.contact-minimal {
-    text-align: center;
-    padding-top: 40px;
-    border-top: 1px solid #e0e0e0;
-}
-
-.contact-minimal p {
-    font-size: 0.95rem;
+.gift-card-description {
+    font-size: 0.9rem;
     color: #666;
     font-weight: 300;
-    margin: 10px 0;
+    line-height: 1.6;
 }
 
-.calendly-inline-widget {
-    border-radius: 16px;
-    overflow: hidden;
-}
-
-
-/* Responsive Design */
+/* ── Responsive ───────────────────────────── */
 @media (max-width: 768px) {
     .top-bar {
         padding: 10px 20px;
     }
-    
+
     .top-bar-content {
         flex-direction: column;
         gap: 10px;
         position: relative;
     }
-    
+
     .top-bar-brand {
         position: relative;
         left: 0;
         transform: none;
         order: 1;
     }
-    
+
     .back-link {
         order: 0;
         align-self: flex-start;
     }
-    
+
     .top-nav {
         order: 2;
         gap: 20px;
     }
-    
+
     .top-bar-name {
         font-size: 1.1rem;
     }
-    
+
     .top-bar-logo {
         width: 30px;
     }
-    
+
     body {
         padding-top: 120px;
     }
-    
+
     .brand-logo {
         width: 100px;
         margin-bottom: 1.5rem;
     }
-    
+
     .brand-name {
         font-size: 2.2rem;
         letter-spacing: 3px;
     }
-    
+
     .brand-subtitle {
         font-size: 0.85rem;
         margin-bottom: 50px;
     }
-    
+
     .landing-container {
         height: auto;
         min-height: 80vh;
@@ -517,7 +527,7 @@ body {
         margin-top: 0;
         padding: 20px;
     }
-    
+
     .minimal-nav {
         flex-direction: column;
         gap: 20px;
@@ -526,23 +536,21 @@ body {
     .minimal-link {
         font-size: 1rem;
     }
-    
-    .page-header {
-        padding: 20px 30px;
-        flex-direction: column;
-        gap: 20px;
-        align-items: flex-start;
-    }
-    
+
     .minimal-main {
         padding: 30px 20px 80px;
     }
-    
+
     .page-title {
         font-size: 2.2rem;
         margin-bottom: 30px;
     }
-    
+
+    .service-category-heading {
+        font-size: 1.5rem;
+        margin-top: 35px;
+    }
+
     .service-header {
         flex-direction: column;
         align-items: flex-start;
@@ -552,16 +560,16 @@ body {
     .service-item h3 {
         font-size: 1.3rem;
     }
-    
+
     .simple-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .about-with-image {
         flex-direction: column;
         gap: 25px;
     }
-    
+
     .about-image-container {
         width: 100%;
         max-width: 280px;
@@ -571,12 +579,12 @@ body {
     .about-text p {
         font-size: 0.95rem;
     }
-    
+
     .service-content {
         flex-direction: column;
         gap: 15px;
     }
-    
+
     .service-image-container {
         width: 100%;
         max-width: 250px;
@@ -599,11 +607,19 @@ body {
         font-size: 0.9rem;
     }
 
-    /* Form inputs - prevent iOS zoom */
-    .minimal-form input,
-    .minimal-form select,
-    .minimal-form textarea {
-        font-size: 16px;
+    /* Gifts page mobile */
+    .gift-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .gift-card {
+        padding: 25px 15px;
+        min-height: 200px;
+    }
+
+    .gift-card-amount {
+        font-size: 2.2rem;
     }
 }
 
@@ -621,6 +637,10 @@ body {
         font-size: 1.8rem;
     }
 
+    .service-category-heading {
+        font-size: 1.3rem;
+    }
+
     .service-item h3 {
         font-size: 1.1rem;
     }
@@ -635,6 +655,14 @@ body {
 
     .top-link {
         font-size: 0.85rem;
+    }
+
+    .gift-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gift-card-amount {
+        font-size: 2.5rem;
     }
 }
 
@@ -655,4 +683,3 @@ body {
         justify-content: center;
     }
 }
-
