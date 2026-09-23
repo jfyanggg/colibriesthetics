@@ -142,20 +142,6 @@
             text-align: center;
         }
 
-        /* ---- Arched Mother's Day script ---- */
-        .mothers-day-arch {
-            display: block;
-            margin: 0 auto 6px;
-            overflow: visible;
-        }
-
-        .mothers-day-arch text {
-            font-family: 'Great Vibes', cursive;
-            font-size: 52px;
-            fill: #ff8daf;
-            letter-spacing: 2px;
-        }
-
         /* ---- Intro on step 1 ---- */
         .step1-intro {
             text-align: center;
@@ -721,35 +707,25 @@
             <!-- STEP 1: Choose Gift Card -->
             <div class="gift-step active" id="step1">
 
-                <!-- Arched "Mother's Day" in cursive -->
-                <svg class="mothers-day-arch" style="margin-bottom: -45px;" viewBox="0 0 420 110" width="420" height="110" xmlns="http://www.w3.org/2000/svg" aria-label="Mother's Day">
-                    <defs>
-                        <!-- A gentle upward arc: starts bottom-left, peaks in the center, ends bottom-right -->
-                        <path id="archPath" d="M 30,95 Q 210,5 390,95" fill="none"/>
-                    </defs>
-                    <text>
-                        <textPath href="#archPath" startOffset="50%" text-anchor="middle">Mother's Day</textPath>
-                    </text>
-                </svg>
 
-                <p style="text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 400; color: #ff8daf; letter-spacing: 2px; margin: 0 0 6px;">Gift Cards</p>
-                <p style="text-align: center; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 400; color: #999; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 35px;">Limited Time Offer!</p>
+                <p style="text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 400; color: #000000; letter-spacing: 2px; margin: 0 0 6px;">Gift Cards</p>
+                <p style="text-align: center; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 400; color: #999; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 35px;">For friends, family, and loved ones!</p>
                 
                 <div class="gift-grid gift-grid-pair">
                     <div class="gift-card" data-amount="50">
                         <div>
                             <div class="gift-card-amount">$50</div>
-                            <div class="gift-card-label">$60 value!</div>
+                            <div class="gift-card-label">Sweet</div>
                         </div>
-                        <p class="gift-card-description">Purchase a $50 gift card and receive $10 more!</p>
+                        <p class="gift-card-description">Purchase a $50 gift card</p>
                     </div>
 
                     <div class="gift-card" data-amount="100">
                         <div>
                             <div class="gift-card-amount">$100</div>
-                            <div class="gift-card-label">$120 value!</div>
+                            <div class="gift-card-label">Radiant</div>
                         </div>
-                        <p class="gift-card-description">Purchase a $100 gift card and receive $20 more!</p>
+                        <p class="gift-card-description">Purchase a $100 gift card</p>
                     </div>
                 </div>
 
@@ -808,20 +784,17 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Include complimentary mini dried bouquet for in-studio pickup? <span class="required">*</span></label>
-                            <p class="form-help">*While supplies last*</p>
+                            <label> </span></label>
+                            <p class="form-help"></p>
                             <div class="option-group" id="bouquetOptions">
-                                <div class="option-pill" data-value="yes">Yes</div>
-                                <div class="option-pill" data-value="no">No</div>
+                               
                             </div>
                             
                         </div>
 
                         <div class="form-group">
-                            <label>Digital or Physical Gift Card? <span class="required">*</span></label>
+                            <label> </span></label>
                             <div class="option-group" id="deliveryOptions">
-                                <div class="option-pill" data-value="me">Digital</div>
-                                <div class="option-pill" data-value="recipient">Physical</div>
                             </div>
                         </div>
 
@@ -1065,27 +1038,7 @@
             if (!firstInvalid) firstInvalid = emailEl;
         }
 
-        // Delivery choice required
-        if (!state.deliveryChoice) {
-            isValid = false;
-            const pills = document.getElementById('deliveryOptions');
-            pills.style.outline = '1px solid #c0392b';
-            pills.style.outlineOffset = '5px';
-            pills.style.borderRadius = '3px';
-        } else {
-            document.getElementById('deliveryOptions').style.outline = 'none';
-        }
-
-        // Bouquet choice required
-        if (!state.bouquetChoice) {
-            isValid = false;
-            const bPills = document.getElementById('bouquetOptions');
-            bPills.style.outline = '1px solid #c0392b';
-            bPills.style.outlineOffset = '5px';
-            bPills.style.borderRadius = '3px';
-        } else {
-            document.getElementById('bouquetOptions').style.outline = 'none';
-        }
+        
 
         if (!isValid) {
             if (firstInvalid) {
@@ -1128,8 +1081,6 @@
         html += '<div class="review-section">';
         html += '<h3 class="review-section-title">Gift Card</h3>';
         html += '<div class="review-item"><span class="review-label">Selection</span><span class="review-value">' + (state.selectedLabel || 'Custom') + '</span></div>';
-        html += '<div class="review-item"><span class="review-label">Format</span><span class="review-value">' + deliveryText + '</span></div>';
-        html += '<div class="review-item"><span class="review-label">Bouquet Pickup</span><span class="review-value">' + (f.bouquetChoice === 'yes' ? 'Yes' : 'No') + '</span></div>';
         html += '<div class="review-total"><span class="review-total-label">Total</span><span class="review-total-value">$' + state.selectedAmount + '</span></div>';
         html += '</div>';
 
@@ -1169,8 +1120,7 @@
         // Build a friendly summary for the email body
         const detailLines = [
             'Gift Card: ' + (state.selectedLabel || 'Custom') + ' — $' + state.selectedAmount,
-            'Format: ' + (f.deliveryChoice === 'recipient' ? 'Physical' : 'Digital'),
-            'Bouquet Pickup: ' + (f.bouquetChoice === 'yes' ? 'Yes' : 'No'),
+            
             '',
             'From: ' + senderName,
             'Sender Email: ' + f.senderEmail,
